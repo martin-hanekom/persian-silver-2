@@ -1,0 +1,9 @@
+import math
+
+FPS = 30
+SCREEN_SIZE = (1200, 900)
+BOARD_LAYERS = 2
+TILE_RADIUS = 50
+TILE_SIDE = TILE_RADIUS * math.cos(math.pi / 12)
+TILE_COLOR = (0, 154, 23)
+TILE_PADDING = 0
