@@ -1,7 +1,43 @@
 import math
 from dataclasses import dataclass
 import pygame
+from sprite import ISprite
 from constants import *
+
+# (sector, layer, pos)
+# [
+#   [
+#       [
+#           (0, 1, 0),
+#       ],
+#       [
+#           (0, 2, 0),
+#           (0, 2, 1),
+#       ],
+#       ...
+#   ],
+#   [
+#       [
+#           (1, 1, 0),
+#       ],
+#       [
+#           (1, 2, 0),
+#           (1, 2, 1),
+#       ],
+#       ...
+#   ],
+#   ...
+# ]
+
+@dataclass
+class Board(ISprite):
+    def __init__(self):
+        pass
+
+    def get_sector_tile(self, sector: int, 
+
+    def draw(self):
+        pass
 
 @dataclass
 class Tile:
