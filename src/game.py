@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 import pygame
+from piece import IPiece
+from player import Player
 from board import Board
-from constants import FPS, SCREEN_SIZE
+from ui import Ui
+from constants import *
 
 @dataclass
 class Game:
@@ -17,7 +20,10 @@ class Game:
         self.font = pygame.font.SysFont("Calibri", 16)
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(SCREEN_SIZE)
+        IPiece.load()
         self.board = Board()
+        self.players = [Player(i) for i in range(NUM_PLAYERS)]
+        self.ui = Ui._get()
         Game.__instance = self
 
     def __del__(self):
@@ -41,18 +47,31 @@ class Game:
                         running = False
                 if event.type == pygame.MOUSEMOTION:
                     mouse_pos = pygame.mouse.get_pos()
-                    self.board.mouse_move(mouse_pos)
+                    self.mouse_move(mouse_pos)
                 if event.type == pygame.MOUSEBUTTONUP:
                     mouse_pos = pygame.mouse.get_pos()
-                    self.board.mouse_clicked(mouse_pos)
+                    self.mouse_clicked(mouse_pos)
 
             self.draw()
             self.update(self.clock.tick(FPS))
 
     def draw(self):
-        self.screen.fill((255, 255, 255))
+        self.screen.fill(CL_BACKGROUND)
         self.board.draw(self.screen, self.font)
+        for player in self.players:
+            player.draw(self.screen)
+        self.ui.draw(self.screen, self.font)
         pygame.display.update()
+
+    def mouse_move(self, mouse_pos):
+        for player in self.players:
+            player.mouse_move(mouse_pos)
+        self.board.mouse_move(mouse_pos)
+
+    def mouse_clicked(self, mouse_pos):
+        for player in self.players:
+            player.mouse_clicked(mouse_pos)
+        self.board.mouse_clicked(mouse_pos)
 
     def update(self, dt: float):
         pass
