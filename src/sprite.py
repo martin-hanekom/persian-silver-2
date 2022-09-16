@@ -9,3 +9,11 @@ class ISprite(ABC):
     def update(self):
         """ Optionally update sprite """
         pass
+
+    def mouse_move(self, mouse_pos: (float, float)):
+        """ React to mouse movement """
+        pass
+
+    def mouse_click(self, mouse_pos: (float, float)):
+        """ React to mouse click """
+        pass
