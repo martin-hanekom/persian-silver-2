@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass
 import pygame
+import game
 from sprite import ISprite
 from tools import Position, Resource
 from constants import *
@@ -73,3 +74,5 @@ class Tile(ISprite):
 
     def mouse_clicked(self, mouse_pos: (float, float)):
         self.selected = self.pos.circle_intersect(TILE_SIDE, mouse_pos)
+        if self.selected:
+            game.game.select(None) 

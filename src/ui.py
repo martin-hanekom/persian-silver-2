@@ -15,6 +15,7 @@ class Ui(ISprite):
             raise Exception("Ui already instantiated.")
         self.panel = pygame.Rect(SCREEN_SIZE[0] - UI_SIZE - UI_PADDING, UI_PADDING, UI_SIZE, SCREEN_SIZE[1] - 2 * UI_PADDING)
         self.turn = UiTurn(self.panel)
+        self.menu = UiMenu(self.panel)
         Ui.__instance = self
 
     @staticmethod
@@ -27,6 +28,7 @@ class Ui(ISprite):
     def draw(self, screen: pygame.Surface):
         pygame.draw.rect(screen, CL_UI, self.panel, border_radius=3)
         self.turn.draw(screen)
+        self.menu.draw(screen)
 
     def update(self, dt: float):
         self.turn.update(dt)
@@ -64,9 +66,10 @@ class UiTurn(ISprite):
         pygame.draw.rect(screen, CL_SECTOR[color], self.button, border_radius=3)
         desc_w, desc_h = self.description[game.game.turn].get_size()
         bt_w, bt_h = self.button_text.get_size()
+        tt_w, tt_h = self.timer_text.get_size()
         screen.blit(self.description[game.game.turn], (self.button.left + (self.button.width - desc_w) / 2, self.button.top - 30))
-        screen.blit(self.button_text, (self.button.left + (self.button.width - bt_w) / 2, self.button.top + (self.button.height - bt_h) / 2))
-        screen.blit(self.timer_text, (self.button.left, self.button.top))
+        screen.blit(self.button_text, (self.button.left + (self.button.width - bt_w) / 2, self.button.top + (self.button.height - bt_h) / 2 - 10))
+        screen.blit(self.timer_text, (self.button.left + (self.button.width - tt_w) / 2, self.button.top + self.button.height - tt_h - 10))
 
     def update(self, dt: float):
         if game.game.timer < self.timer or game.game.timer > self.timer + 1:
@@ -88,3 +91,32 @@ class UiTurn(ISprite):
     def mouse_clicked(self, mouse_pos: (float, float)):
         if self.button.collidepoint(mouse_pos):
             game.game.end_turn()
+
+@dataclass
+class UiMenu(ISprite):
+    def __init__(self, panel: pygame.Rect):
+        self.panel = panel
+        self.menu_text = Resource.fonts.get("systeml").render("Building Menu", True, CL_UI_TEXT)
+        self.slot_pos = []
+        x, y = (self.panel.left + UI_MENU_PADDING, self.panel.top + self.menu_text.get_size()[1] + 2 * UI_MENU_PADDING)
+        for i in range(UI_MENU_SLOTS):
+            self.slot_pos.append((x, y))
+            x += PIECE_SIZE[0] + UI_MENU_PADDING
+            if x > self.panel.left + self.panel.width - PIECE_SIZE[0] - UI_MENU_PADDING:
+                x = self.panel.left + UI_MENU_PADDING
+                y += PIECE_SIZE[1] + UI_MENU_PADDING
+        self.filled_slots = [None for _ in range(UI_MENU_SLOTS)]
+        self.empty_slots = [pygame.Rect(*slot, *PIECE_SIZE) for slot in self.slot_pos]
+
+    def draw(self, screen: pygame.Surface):
+        screen.blit(self.menu_text, (self.panel.left + UI_MENU_PADDING, self.panel.top + UI_MENU_PADDING))
+        for filled, empty, pos in zip(self.filled_slots, self.empty_slots, self.slot_pos):
+            if filled:
+                screen.blit(filled, pos)
+            else:
+                pygame.draw.rect(screen, CL_BACKGROUND, empty, border_radius=3)
+
+    def set_pieces(self, team: int, pieces: list[str]):
+        self.filled_slots = [None for _ in range(UI_MENU_SLOTS)]
+        for index, label in enumerate(pieces):
+            self.filled_slots[index] = Resource.textures.get(label)[team]

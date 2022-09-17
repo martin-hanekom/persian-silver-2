@@ -2,8 +2,8 @@ import math
 
 FPS = 30
 NUM_PLAYERS = 3
-SCREEN_SIZE = (1400, 930)
-UI_SIZE = 400
+SCREEN_SIZE = (1300, 930)
+UI_SIZE = 340
 UI_PADDING = 40
 BOARD_SECTORS = 6
 BOARD_LAYERS = 5
@@ -19,6 +19,9 @@ BOARD_CENTER = (BOARD_RADIUS + BOARD_PADDING, SCREEN_SIZE[1] / 2)
 TURN_BUTTON_SIZE = (200, 80)
 TURN_MAX_TIME = 30
 TURN_BUTTON_WARNING = 5
+
+UI_MENU_SLOTS = 6
+UI_MENU_PADDING = 10
 
 CL_BLACK = (0, 0, 0)
 CL_GRAY = (128, 128, 128)
@@ -36,3 +39,10 @@ CL_UI_TEXT = (220, 233, 205)
 CL_SECTOR = [(0, 154, 23), (89, 166, 8)]
 CL_SECTOR_HOVER = (122, 183, 57)
 CL_SECTOR_SELECTED = (138, 192, 82)
+
+# (gold, (food consume, fuel consume), (food produce, fuel produce), [can construct/recruit])
+PIECES = {
+    "town": (10, (0, 0), (1, 0), ["farm", "soldier"]),
+    "farm": (2, (0, 0), (3, 0), []),
+    "soldier": (1, (0.2, 0), (0, 0), [])
+}

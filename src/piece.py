@@ -1,24 +1,24 @@
 import os
 from dataclasses import dataclass
 import pygame
+import game
 from sprite import ISprite
 from tools import Position, Resource
 from constants import *
 
-class IPiece:
+class Piece(ISprite):
     textures: dict[str, list[pygame.Surface]] = {}
     texture: pygame.Surface
     hover: bool
     selected: bool
 
-    def __init__(self):
+    def __init__(self, team: int, pos: Position, label: str):
         self.hover = False
         self.selected = False
-
-    def create(team: int, pos: Position, piece: str = "town"):
-        match piece:
-            case "town":
-                return Town(team, pos)
+        self.team = team
+        self.pos = pos
+        self.label = label
+        self.texture = Resource.textures.get(self.label)[self.team]
 
     def draw(self, screen: pygame.Surface):
         offset = (-PIECE_SIZE[0] / 2, -PIECE_SIZE[1] / 2)
@@ -33,14 +33,5 @@ class IPiece:
 
     def mouse_clicked(self, mouse_pos: (float, float)):
         self.selected = self.pos.circle_intersect(PIECE_SIZE[0] / 2, mouse_pos)
-        
-@dataclass
-class Town(IPiece, ISprite):
-    team: int
-    pos: Position
-    
-    def __init__(self, team: int, pos: Position):
-        super().__init__()
-        self.team = team
-        self.pos = pos
-        self.texture = Resource.textures.get("town")[self.team]
+        if self.selected:
+            game.game.select(self) 

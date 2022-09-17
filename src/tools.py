@@ -37,6 +37,8 @@ class Resource:
     def init():
         Resource.textures = {
             "town": [pygame.image.load(os.path.join("res", "images", "buildings", f"town{i}.png")) for i in range(NUM_PLAYERS)],
+            "farm": [pygame.image.load(os.path.join("res", "images", "buildings", f"farm{i}.png")) for i in range(NUM_PLAYERS)],
+            "soldier": [pygame.image.load(os.path.join("res", "images", "units", f"soldier{i}.png")) for i in range(NUM_PLAYERS)]
         }
         for items in Resource.textures.values():
             for index, item in enumerate(items):

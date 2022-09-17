@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import pygame
 from player import Player
+from piece import Piece
 from board import Board
 from ui import Ui
 from tools import Resource
@@ -66,15 +67,15 @@ class Game:
         pygame.display.update()
 
     def mouse_move(self, mouse_pos):
+        self.board.mouse_move(mouse_pos)
         for player in self.players:
             player.mouse_move(mouse_pos)
-        self.board.mouse_move(mouse_pos)
         self.ui.mouse_move(mouse_pos)
 
     def mouse_clicked(self, mouse_pos):
+        self.board.mouse_clicked(mouse_pos)
         for player in self.players:
             player.mouse_clicked(mouse_pos)
-        self.board.mouse_clicked(mouse_pos)
         self.ui.mouse_clicked(mouse_pos)
 
     def update(self, dt: float):
@@ -82,6 +83,15 @@ class Game:
         if self.timer < 0:
             self.end_turn()
         self.ui.update(dt)
+
+    def select(self, piece: Piece):
+        if not piece:
+            self.ui.menu.set_pieces(0, [])
+            return
+        if self.turn == piece.team:
+            print(f"{piece.label} [{piece.team}] selected")
+            print(PIECES.get(piece.label)[3])
+            self.ui.menu.set_pieces(piece.team, PIECES.get(piece.label)[3])
 
     def end_turn(self):
         self.turn = (self.turn + 1) % 3
