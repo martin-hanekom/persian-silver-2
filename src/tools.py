@@ -1,4 +1,4 @@
-import math
+import math, os
 from dataclasses import dataclass
 import pygame
 from constants import *
@@ -27,4 +27,21 @@ class Position:
         return (self.sector, self.layer, self.index)
 
     def circle_intersect(self, radius: float, pos: (float, float)):
-        return math.sqrt((pos[0] - self.x)**2 + (pos[1] - self.y)**2) <= radius
+         return math.sqrt((pos[0] - self.x)**2 + (pos[1] - self.y)**2) <= radius
+ 
+class Resource:
+    textures: dict[str, list[pygame.Surface]] = {}
+    fonts: dict[str, pygame.font.Font] = {}
+
+    @staticmethod
+    def init():
+        Resource.textures = {
+            "town": [pygame.image.load(os.path.join("res", "images", "buildings", f"town{i}.png")) for i in range(NUM_PLAYERS)],
+        }
+        for items in Resource.textures.values():
+            for index, item in enumerate(items):
+                items[index] = pygame.transform.scale(item, PIECE_SIZE).convert_alpha()
+        Resource.fonts = {
+            "system": pygame.font.SysFont("Calibri", 18),
+            "systeml": pygame.font.SysFont("Calibri", 24),
+        }

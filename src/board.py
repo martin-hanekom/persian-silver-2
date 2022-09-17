@@ -2,7 +2,7 @@ import math
 from dataclasses import dataclass
 import pygame
 from sprite import ISprite
-from tools import Position
+from tools import Position, Resource
 from constants import *
 
 @dataclass
@@ -14,11 +14,11 @@ class Board(ISprite):
             for layer in range(1, BOARD_LAYERS + 1)]
             for sector in range(BOARD_SECTORS)]
 
-    def draw(self, screen: pygame.Surface, font: pygame.font.Font):
+    def draw(self, screen: pygame.Surface):
         for sector in self.tiles:
             for layer in sector:
                 for tile in layer:
-                    tile.draw(screen, font)
+                    tile.draw(screen)
 
     def mouse_move(self, mouse_pos: (float, float)):
         for sector in self.tiles:
@@ -57,7 +57,7 @@ class Tile(ISprite):
         """ get tuple pos from radius and arbitrary angle """
         return (math.ceil(self.pos.x + TILE_RADIUS * math.cos(angle)), math.ceil(self.pos.y + TILE_RADIUS * math.sin(angle)))
 
-    def draw(self, screen: pygame.Surface, font: pygame.font.Font):
+    def draw(self, screen: pygame.Surface):
         if self.selected:
             color = CL_SECTOR_SELECTED
         elif self.hover:

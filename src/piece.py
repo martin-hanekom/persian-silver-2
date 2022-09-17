@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 import pygame
 from sprite import ISprite
-from tools import Position
+from tools import Position, Resource
 from constants import *
 
 class IPiece:
@@ -14,15 +14,6 @@ class IPiece:
     def __init__(self):
         self.hover = False
         self.selected = False
-
-    @staticmethod
-    def load():
-        IPiece.textures = {
-            "town": [pygame.image.load(os.path.join("res", "images", "buildings", f"town{i}.png")) for i in range(NUM_PLAYERS)],
-        }
-        for items in IPiece.textures.values():
-            for index, item in enumerate(items):
-                items[index] = pygame.transform.scale(item, PIECE_SIZE).convert_alpha()
 
     def create(team: int, pos: Position, piece: str = "town"):
         match piece:
@@ -52,4 +43,4 @@ class Town(IPiece, ISprite):
         super().__init__()
         self.team = team
         self.pos = pos
-        self.texture = IPiece.textures.get("town")[self.team]
+        self.texture = Resource.textures.get("town")[self.team]

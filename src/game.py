@@ -4,6 +4,7 @@ from piece import IPiece
 from player import Player
 from board import Board
 from ui import Ui
+from tools import Resource
 from constants import *
 
 @dataclass
@@ -12,17 +13,18 @@ class Game:
     clock: pygame.time.Clock
     screen: pygame.Surface
     board: Board
+    turn: int
 
     def __init__(self):
         if Game.__instance:
             raise Exception("Game already instantiated.")
         pygame.init()
-        self.font = pygame.font.SysFont("Calibri", 16)
-        self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(SCREEN_SIZE)
-        IPiece.load()
+        Resource.init()
+        self.clock = pygame.time.Clock()
         self.board = Board()
         self.players = [Player(i) for i in range(NUM_PLAYERS)]
+        self.turn = 0
         self.ui = Ui._get()
         Game.__instance = self
 
@@ -57,10 +59,10 @@ class Game:
 
     def draw(self):
         self.screen.fill(CL_BACKGROUND)
-        self.board.draw(self.screen, self.font)
+        self.board.draw(self.screen)
         for player in self.players:
             player.draw(self.screen)
-        self.ui.draw(self.screen, self.font)
+        self.ui.draw(self.screen)
         pygame.display.update()
 
     def mouse_move(self, mouse_pos):
@@ -75,3 +77,4 @@ class Game:
 
     def update(self, dt: float):
         pass
+      
