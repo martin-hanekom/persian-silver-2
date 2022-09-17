@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import pygame
-from piece import IPiece
 from player import Player
 from board import Board
 from ui import Ui
@@ -12,8 +11,8 @@ class Game:
     __instance = None
     clock: pygame.time.Clock
     screen: pygame.Surface
-    board: Board
     turn: int
+    timer: float
 
     def __init__(self):
         if Game.__instance:
@@ -25,6 +24,7 @@ class Game:
         self.board = Board()
         self.players = [Player(i) for i in range(NUM_PLAYERS)]
         self.turn = 0
+        self.timer = TURN_MAX_TIME
         self.ui = Ui._get()
         Game.__instance = self
 
@@ -54,8 +54,8 @@ class Game:
                     mouse_pos = pygame.mouse.get_pos()
                     self.mouse_clicked(mouse_pos)
 
-            self.draw()
             self.update(self.clock.tick(FPS))
+            self.draw()
 
     def draw(self):
         self.screen.fill(CL_BACKGROUND)
@@ -69,12 +69,22 @@ class Game:
         for player in self.players:
             player.mouse_move(mouse_pos)
         self.board.mouse_move(mouse_pos)
+        self.ui.mouse_move(mouse_pos)
 
     def mouse_clicked(self, mouse_pos):
         for player in self.players:
             player.mouse_clicked(mouse_pos)
         self.board.mouse_clicked(mouse_pos)
+        self.ui.mouse_clicked(mouse_pos)
 
     def update(self, dt: float):
-        pass
+        self.timer -= dt / 1000
+        if self.timer < 0:
+            self.end_turn()
+        self.ui.update(dt)
+
+    def end_turn(self):
+        self.turn = (self.turn + 1) % 3
+        self.timer = TURN_MAX_TIME
       
+game = Game._get()

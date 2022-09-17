@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 import pygame
-from game import Game
+import game
 
-def main():
-    Game._get().run()
-
-main()
+if __name__ == "__main__":
+    game.game.run()
