@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import pygame
 from player import Player
 from piece import Piece
-from board import Board
+from board import Board, Tile
 from ui import Ui
 from tools import Resource
 from constants import *
@@ -14,6 +14,8 @@ class Game:
     screen: pygame.Surface
     turn: int
     timer: float
+    menu_piece: Piece
+    selected_piece: Piece
 
     def __init__(self):
         if Game.__instance:
@@ -27,6 +29,8 @@ class Game:
         self.turn = 0
         self.timer = TURN_MAX_TIME
         self.ui = Ui._get()
+        self.menu_piece = None
+        self.selected_piece = None
         Game.__instance = self
 
     def __del__(self):
@@ -73,7 +77,7 @@ class Game:
         self.ui.mouse_move(mouse_pos)
 
     def mouse_clicked(self, mouse_pos):
-        self.board.mouse_clicked(mouse_pos)
+        self.board.mouse_clicked(mouse_pos, self.menu_piece)
         for player in self.players:
             player.mouse_clicked(mouse_pos)
         self.ui.mouse_clicked(mouse_pos)
@@ -86,12 +90,20 @@ class Game:
 
     def select(self, piece: Piece):
         if not piece:
-            self.ui.menu.set_pieces(0, [])
+            self.ui.menu.set_pieces([])
             return
         if self.turn == piece.team:
-            print(f"{piece.label} [{piece.team}] selected")
-            print(PIECES.get(piece.label)[3])
-            self.ui.menu.set_pieces(piece.team, PIECES.get(piece.label)[3])
+            pieces = [Piece(piece.team, label) for label in PIECES.get(piece.label)[3]]
+            self.ui.menu.set_pieces(pieces)
+
+    def menu_select(self, piece: Piece):
+        if not piece or self.turn == piece.team:
+            self.menu_piece = piece
+
+    def buy_piece(self, tile: Tile):
+        if self.turn == self.menu_piece.team:
+            self.players[self.menu_piece.team].pieces.append(Piece(self.menu_piece.team, self.menu_piece.label, tile.pos))
+            self.menu_piece = None
 
     def end_turn(self):
         self.turn = (self.turn + 1) % 3

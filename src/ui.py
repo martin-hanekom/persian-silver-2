@@ -3,6 +3,7 @@ import math
 import pygame
 import game
 from sprite import ISprite
+from piece import Piece
 from tools import Resource
 from constants import *
 
@@ -14,8 +15,8 @@ class Ui(ISprite):
         if Ui.__instance:
             raise Exception("Ui already instantiated.")
         self.panel = pygame.Rect(SCREEN_SIZE[0] - UI_SIZE - UI_PADDING, UI_PADDING, UI_SIZE, SCREEN_SIZE[1] - 2 * UI_PADDING)
-        self.turn = UiTurn(self.panel)
         self.menu = UiMenu(self.panel)
+        self.turn = UiTurn(self.panel)
         Ui.__instance = self
 
     @staticmethod
@@ -27,16 +28,18 @@ class Ui(ISprite):
 
     def draw(self, screen: pygame.Surface):
         pygame.draw.rect(screen, CL_UI, self.panel, border_radius=3)
-        self.turn.draw(screen)
         self.menu.draw(screen)
+        self.turn.draw(screen)
 
     def update(self, dt: float):
         self.turn.update(dt)
 
     def mouse_move(self, mouse_pos: (float, float)):
+        self.menu.mouse_move(mouse_pos)
         self.turn.mouse_move(mouse_pos)
 
     def mouse_clicked(self, mouse_pos: (float, float)):
+        self.menu.mouse_clicked(mouse_pos)
         self.turn.mouse_clicked(mouse_pos)
 
 @dataclass
@@ -54,7 +57,7 @@ class UiTurn(ISprite):
         self.panel = panel
         self.button = pygame.Rect(self.panel.left + self.panel.width - TURN_BUTTON_SIZE[0] - 20, self.panel.top + self.panel.height - TURN_BUTTON_SIZE[1] - 20, *TURN_BUTTON_SIZE)
         self.button_text = Resource.fonts.get("systeml").render("END TURN", True, CL_BACKGROUND)
-        self.description = [Resource.fonts.get("system").render(f"Player {i}'s turn", True, CL_UI_TEXT) for i in range(NUM_PLAYERS)]
+        self.description = [Resource.fonts.get("system").render(f"Player {i + 1}'s turn", True, CL_UI_TEXT) for i in range(NUM_PLAYERS)]
         self.timer = 0
         self.warn_timer = 0.5
         self.timer_text = Resource.fonts.get("system").render(f"0:{self.timer}", True, CL_BACKGROUND)
@@ -94,6 +97,13 @@ class UiTurn(ISprite):
 
 @dataclass
 class UiMenu(ISprite):
+    panel: pygame.Rect
+    menu_text: pygame.Surface
+    slot_pos: list[(int, int)]
+    filled_slots: list[Piece]
+    empty_slots: list[pygame.Rect]
+    hovers: list[bool]
+
     def __init__(self, panel: pygame.Rect):
         self.panel = panel
         self.menu_text = Resource.fonts.get("systeml").render("Building Menu", True, CL_UI_TEXT)
@@ -107,16 +117,25 @@ class UiMenu(ISprite):
                 y += PIECE_SIZE[1] + UI_MENU_PADDING
         self.filled_slots = [None for _ in range(UI_MENU_SLOTS)]
         self.empty_slots = [pygame.Rect(*slot, *PIECE_SIZE) for slot in self.slot_pos]
+        self.hovers = [False for _ in range(UI_MENU_SLOTS)]
 
     def draw(self, screen: pygame.Surface):
         screen.blit(self.menu_text, (self.panel.left + UI_MENU_PADDING, self.panel.top + UI_MENU_PADDING))
-        for filled, empty, pos in zip(self.filled_slots, self.empty_slots, self.slot_pos):
+        for filled, empty, pos, hover in zip(self.filled_slots, self.empty_slots, self.slot_pos, self.hovers):
+            color = CL_BACKGROUND_HOVER if hover else CL_BACKGROUND
+            pygame.draw.rect(screen, color, empty, border_radius=3)
             if filled:
-                screen.blit(filled, pos)
-            else:
-                pygame.draw.rect(screen, CL_BACKGROUND, empty, border_radius=3)
+                screen.blit(filled.texture, pos)
 
-    def set_pieces(self, team: int, pieces: list[str]):
+    def set_pieces(self, pieces: list[Piece]):
         self.filled_slots = [None for _ in range(UI_MENU_SLOTS)]
-        for index, label in enumerate(pieces):
-            self.filled_slots[index] = Resource.textures.get(label)[team]
+        for index, piece in enumerate(pieces):
+            self.filled_slots[index] = piece
+
+    def mouse_move(self, mouse_pos: (float, float)):
+        self.hovers = [empty.collidepoint(mouse_pos) for empty in self.empty_slots]
+
+    def mouse_clicked(self, mouse_pos: (float, float)):
+        for filled, empty in zip(self.filled_slots, self.empty_slots):
+            if empty.collidepoint(mouse_pos):
+                game.game.menu_select(filled)

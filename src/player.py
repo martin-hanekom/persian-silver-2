@@ -11,7 +11,7 @@ class Player(ISprite):
 
     def __init__(self, team: int):
         self.team = team
-        self.pieces = [Piece(self.team, Position(self.team * 2, BOARD_LAYERS - 1, (BOARD_LAYERS - 1) // 2), "town")]
+        self.pieces = [Piece(self.team, "town", Position(self.team * 2, BOARD_LAYERS - 1, (BOARD_LAYERS - 1) // 2))]
 
     def draw(self, screen: pygame.Surface):
         for piece in self.pieces:

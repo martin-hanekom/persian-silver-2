@@ -6,13 +6,16 @@ from sprite import ISprite
 from tools import Position, Resource
 from constants import *
 
+@dataclass
 class Piece(ISprite):
-    textures: dict[str, list[pygame.Surface]] = {}
     texture: pygame.Surface
+    team: int
+    pos: Position
+    label: str
     hover: bool
     selected: bool
 
-    def __init__(self, team: int, pos: Position, label: str):
+    def __init__(self, team: int, label: str, pos: Position = Position(0, 0, 0)):
         self.hover = False
         self.selected = False
         self.team = team

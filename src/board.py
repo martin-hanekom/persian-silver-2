@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import pygame
 import game
 from sprite import ISprite
+from piece import Piece
 from tools import Position, Resource
 from constants import *
 
@@ -27,7 +28,7 @@ class Board(ISprite):
                 for tile in layer:
                     tile.mouse_move(mouse_pos)
 
-    def mouse_clicked(self, mouse_pos: (float, float)):
+    def mouse_clicked(self, mouse_pos: (float, float), menu_piece: Piece):
         for sector in self.tiles:
             for layer in sector:
                 for tile in layer:
@@ -75,4 +76,7 @@ class Tile(ISprite):
     def mouse_clicked(self, mouse_pos: (float, float)):
         self.selected = self.pos.circle_intersect(TILE_SIDE, mouse_pos)
         if self.selected:
-            game.game.select(None) 
+            if game.game.menu_piece:
+                game.game.buy_piece(self)
+            else:
+                game.game.select(None) 
