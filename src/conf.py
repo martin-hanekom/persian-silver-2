@@ -5,7 +5,7 @@ import math
 CONF_FILE = "conf.json"
 
 class Conf:
-    def __init__(self, conf):
+    def __init__(self, conf: dict = None):
         if conf is not None:
             for key, item in conf.items():
                 if isinstance(item, dict):
@@ -24,5 +24,6 @@ with open(os.path.join(os.path.dirname(__file__), CONF_FILE), "r") as f:
     cc.tile.side = cc.tile.radius * math.cos(math.pi / 6)
     cc.board.radius = 2 * (cc.tile.padding + cc.tile.side) * cc.board.layers + cc.tile.side
     cc.board.center = (cc.board.radius + cc.board.padding, cc.video.size[1] / 2)
-    cc.pieces.size = 1.4 * cc.tile.radius
+    cc.piece = Conf()
+    cc.piece.size = (1.4 * cc.tile.radius, 1.4 * cc.tile.radius)
     print(cc)

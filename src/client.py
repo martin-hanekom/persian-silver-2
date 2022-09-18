@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import pygame
+from tools import Resource
 from board import Board
 from player import Player
 from ui import Ui
@@ -7,15 +8,35 @@ from piece import Piece
 from conf import cc
 
 @dataclass
+class GameState:
+    """ Keep track of rounds, turns and selected """
+    game_round: int = 0
+    team_turn: int = 0
+    turn_timer: float = cc.player.turn.max
+    board: Piece = None
+    menu: Piece = None
+
+@dataclass
 class Client:
-    opponents: list[str]
     team: int
-    screen: pygame.Surface = pygame.display.set_mode(cc.video.screen_size)
-    board: Board = Board()
-    players: list[Player] = [Player(i) for i in range(cc.player.amount)]
-    ui: Ui = Ui()
-    state: GameState = GameState()
-    clock: pygame.time.Clock = pygame.time.Clock()
+    opponents: list[str]
+    screen: pygame.Surface 
+    board: Board
+    players: list[Player]
+    ui: Ui
+    state: GameState
+    clock: pygame.time.Clock
+
+    def __init__(self, team: int, opponents: list[str]):
+        self.team = team
+        self.opponents = opponents
+        self.screen = pygame.display.set_mode(cc.video.size)
+        Resource.init()
+        self.board = Board()
+        self.players = [Player(i) for i in range(cc.player.amount)]
+        self.ui = Ui()
+        self.state = GameState()
+        self.clock = pygame.time.Clock()
 
     def run(self):
         running = True
@@ -41,11 +62,8 @@ class Client:
     def draw(self):
         pass
 
-@dataclass
-class GameState:
-    """ Keep track of rounds, turns and selected """
-    game_round: int = 0
-    team_turn: int = 0
-    turn_timer: float = TURN_MAX_TIME 
-    board: Piece = None
-    menu: Piece = None
+    def mouse_move(self, mouse_pos: (float, float)):
+        pass
+
+    def mouse_clicked(self, mouse_pos: (float, float)):
+        pass
