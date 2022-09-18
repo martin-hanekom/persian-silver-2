@@ -1,13 +1,13 @@
 {
   "video": {
     "fps": 30,
-    "screen_size": [1300, 930]
+    "size": [1300, 930]
   },
   "player": {
     "amount": 3,
     "turn": {
-      "max_time": 30,
-      "warning_time": 5
+      "max": 30,
+      "warning": 5
     }
   },
   "ui": {
