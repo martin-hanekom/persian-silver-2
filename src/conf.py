@@ -26,4 +26,5 @@ with open(os.path.join(os.path.dirname(__file__), CONF_FILE), "r") as f:
     cc.board.center = (cc.board.radius + cc.board.padding, cc.video.size[1] / 2)
     cc.piece = Conf()
     cc.piece.size = (1.4 * cc.tile.radius, 1.4 * cc.tile.radius)
+    cc.piece.offset = (-cc.piece.size[0] / 2, -cc.piece.size[1] / 2)
     print(cc)

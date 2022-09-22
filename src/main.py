@@ -1,11 +1,11 @@
 import pygame
-from client import Client
+import game
 from conf import cc
 
 def main():
     pygame.init()
-    client = Client(0, [])
-    client.run()
+    game.init(0)
+    game.g().run()
     pygame.quit()
 
 if __name__ == "__main__":

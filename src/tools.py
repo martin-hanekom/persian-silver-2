@@ -38,8 +38,8 @@ class Position:
         self.index = index
         sector_a = self.sector * math.pi / 3
         index_a = sector_a + 2 * math.pi / 3
-        x = cc.board.center[0] + 2 * (cc.tile.side + cc.tile.padding) * (self.layer * math.sin(sector_a) + self.index * math.sin(index_a))
-        y = cc.board.center[1] - 2 * (cc.tile.side + cc.tile.padding) * (self.layer * math.cos(sector_a) + self.index * math.cos(index_a))
+        self.x = cc.board.center[0] + 2 * (cc.tile.side + cc.tile.padding) * (self.layer * math.sin(sector_a) + self.index * math.sin(index_a))
+        self.y = cc.board.center[1] - 2 * (cc.tile.side + cc.tile.padding) * (self.layer * math.cos(sector_a) + self.index * math.cos(index_a))
     
     def to_map(self, offset: (float, float) = (0, 0)):
         return (self.x + offset[0], self.y + offset[1])
@@ -49,4 +49,10 @@ class Position:
 
     def circle_intersect(self, radius: float, pos: (float, float)):
         return math.sqrt((pos[0] - self.x)**2 + (pos[1] - self.y)**2) <= radius
+
+@dataclass
+class SpriteState:
+    hover: bool = False
+    selected: bool = False
+    piece: any = None
 

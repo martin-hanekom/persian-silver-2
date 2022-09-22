@@ -16,6 +16,9 @@ class Player:
                     cc.board.layers - 1,
                     (cc.board.layers - 1) // 2))]
 
+    def __repr__(self):
+        return f"{self.team}: {self.pieces}"
+
     def draw(self, screen: pygame.Surface):
         for piece in self.pieces:
             piece.draw(screen)
