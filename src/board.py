@@ -39,7 +39,6 @@ class Tile:
     points: [((float, float), (float, float), (float, float))]
     color: (int, int, int)
     state: SpriteState
-    piece: Piece
 
     def __init__(self, pos: Position):
         self.pos = pos
@@ -52,7 +51,6 @@ class Tile:
             self.points.append((self.pos.to_map(), first, second))
         self.color = cc.color.sector.base[self.pos.sector % 2]
         self.state = SpriteState()
-        self.piece = None
 
     def get_point(self, angle: float) -> (float, float):
         """ get tuple pos from radius and arbitrary angle """
@@ -75,6 +73,6 @@ class Tile:
         self.state.selected = self.pos.circle_intersect(cc.tile.side, mouse_pos)
         if self.state.selected:
             if g().state.menu:
-                print("buy piece")
+                g().buy_piece(self.pos)
             else:
-               g().board_select(self.piece) 
+               g().board_select(None) 

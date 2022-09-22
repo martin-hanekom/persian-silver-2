@@ -11,7 +11,7 @@ class Ui:
     def __init__(self):
         self.panel = pygame.Rect(
             (cc.video.size[0] - cc.ui.width - cc.ui.padding, cc.ui.padding),
-            (cc.ui.width, cc.video.size[0] - 2 * cc.ui.padding))
+            (cc.ui.width, cc.video.size[1] - 2 * cc.ui.padding))
         self.menu = UiMenu(self.panel)
         self.turn = UiTurn(self.panel)
 
@@ -82,7 +82,7 @@ class UiTurn:
 
     def mouse_clicked(self, mouse_pos: (float, float)):
         if self.button.collidepoint(mouse_pos):
-            game.game.end_turn()
+            g().end_turn()
 
 @dataclass
 class UiMenu:
@@ -114,7 +114,7 @@ class UiMenu:
             color = cc.color.background.hover if hover else cc.color.background.base
             pygame.draw.rect(screen, color, empty, border_radius=3)
             if filled:
-                screen.blit(filled.texture, pos)
+                filled.draw(screen, pos)
 
     def set_pieces(self, pieces: list[Piece]):
         self.filled_slots = [None for _ in range(cc.ui.menu.slots)]
@@ -127,4 +127,4 @@ class UiMenu:
     def mouse_clicked(self, mouse_pos: (float, float)):
         for filled, empty in zip(self.filled_slots, self.empty_slots):
             if empty.collidepoint(mouse_pos):
-                game.game.menu_select(filled)
+                g().menu_select(filled)

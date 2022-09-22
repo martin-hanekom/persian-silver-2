@@ -15,6 +15,10 @@ class Conf:
     def __repr__(self):
         return f"{self.__dict__}"
 
+    def __iter__(self):
+        for key in self.__dict__:
+            yield key
+
 cc = None
 with open(os.path.join(os.path.dirname(__file__), CONF_FILE), "r") as f:
     contents = json.load(f)
