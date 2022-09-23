@@ -1,0 +1,86 @@
+{
+  "video": {
+    "fps": 30,
+    "size": [1300, 930]
+  },
+  "player": {
+    "amount": 3,
+    "turn": {
+      "max": 30,
+      "warning": 5
+    }
+  },
+  "ui": {
+    "width": 340,
+    "padding": 40,
+    "menu": {
+      "slots": 6,
+      "padding": 10
+    },
+    "turn": {
+      "size": [200, 80]
+    }
+  },
+  "board": {
+    "sectors": 6,
+    "layers": 5,
+    "padding": 10
+  },
+  "tile": {
+    "radius": 45,
+    "padding": 2
+  },
+  "color": {
+    "background": {
+      "base": [40, 74, 3],
+      "hover": [36, 66, 2]
+    },
+    "ui": {
+      "base": [48, 89, 4],
+      "text": [220, 233, 205]
+    },
+    "sector": {
+      "base": [[0, 154, 23], [89, 166, 8]],
+      "hover": [[122, 183, 57], [122, 183, 57]],
+      "selected": [[138, 192, 82], [138, 192, 82]]
+    }
+  },
+  "pieces": {
+    "town": {
+      "gold": 10,
+      "consume": {
+        "food": 0,
+        "fuel": 0
+      },
+      "produce": {
+        "food": 1,
+        "fuel": 0
+      },
+      "construct": ["farm", "soldier"]
+    },
+    "farm": {
+      "gold": 2,
+      "consume": {
+        "food": 0,
+        "fuel": 0
+      },
+      "produce": {
+        "food": 3,
+        "fuel": 0
+      },
+      "construct": []
+    },
+    "soldier": {
+      "gold": 1,
+      "consume": {
+        "food": 0.2,
+        "fuel": 0
+      },
+      "produce": {
+        "food": 0,
+        "fuel": 0
+      },
+      "construct": []
+    }
+  }
+}
