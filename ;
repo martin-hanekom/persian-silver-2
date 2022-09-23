@@ -1,0 +1,25 @@
+import pygame
+import main
+
+colors = {
+    "background": pygame.Color("#C4AA5E"),
+    "button": pygame.Color("#775EC4"),
+}
+
+""" component functions """
+def enter(state: int):
+    main.state = state
+
+components = [
+    ("panel", pygame.Rect((cc.video.size[0] / 2 - 150, cc.video.size[1] / 2 - 300), (300, 600)), colors["panel"], lambda 1: 1),
+    ("play", pygame.Rect((400, 400), (200, 100)), colors["button"], enter(1)),
+]
+
+def init():
+    pass
+
+def draw(screen: pygame.Surface):
+    screen.fill(colors["background"])
+    for name, rect, color, func in components:
+        pygame.draw.rect(screen, color, rect)
+    pygame.display.update()
