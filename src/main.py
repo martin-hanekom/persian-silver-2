@@ -8,7 +8,8 @@ if __name__ == '__main__':
 
     import assets
     import menu
-    rooms = [menu]
+    import lobby
+    rooms = [menu, lobby]
 
     while g.running:
         for event in pygame.event.get():
@@ -26,5 +27,6 @@ if __name__ == '__main__':
 
         clock.tick(cc.video.fps) 
         rooms[g.room].draw(screen)
+        pygame.display.update()
 
     pygame.quit()

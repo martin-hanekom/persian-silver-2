@@ -1,6 +1,19 @@
 import os
 import json
 import math
+import pygame
+
+colors = {
+    'panel': (pygame.Color('#284A03'), pygame.Color('#284A03')),
+    'background': (pygame.Color('#305904'), pygame.Color('#44691D')),
+    'button': (pygame.Color('#009A17'), pygame.Color('#59A608')),
+    'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
+}
+
+size = {
+    'button': (200, 80),
+    'button_sm': (100, 40),
+}
 
 CONF_FILE = "conf.json"
 

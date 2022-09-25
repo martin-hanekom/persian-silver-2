@@ -2,14 +2,7 @@ import pygame
 import assets
 import utils
 from sprite import Sprite
-from conf import cc, g
-
-colors = {
-    'panel': (pygame.Color('#284A03'), pygame.Color('#284A03')),
-    'background': (pygame.Color('#305904'), pygame.Color('#305904')),
-    'button': (pygame.Color('#009A17'), pygame.Color('#59A608')),
-    'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
-}
+from conf import cc, colors, g
 
 panel = Sprite(
     rect=pygame.Rect(utils.offset(size=cc.video.size, offset=(-150, -250), center=(True, True)), (300, 500)),
@@ -57,7 +50,6 @@ def draw(screen: pygame.Surface):
     screen.fill(colors['background'][0])
     for sprite in components.values():
         sprite.draw(screen)
-    pygame.display.update()
 
 def mouse_move(pos: (float, float)):
     for name, sprite in components.items():
