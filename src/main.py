@@ -1,38 +1,30 @@
 import pygame
-import assets
-import menu
-#import game
-from conf import cc
+from conf import cc, g
 
-state = 0
-rooms = [menu]#, game]
-
-def init():
-    for room in rooms:
-        room.init()
-
-def run():
+if __name__ == '__main__':
+    pygame.init()
     screen = pygame.display.set_mode(cc.video.size)
-    assets.load()
     clock = pygame.time.Clock()
-    init()
-    while True:
+
+    import assets
+    import menu
+    rooms = [menu]
+
+    while g.running:
         for event in pygame.event.get():
             match event.type:
                 case pygame.QUIT:
-                    return
+                    g.running = False 
                 case pygame.KEYDOWN:
                     match event.key:
                         case pygame.K_ESCAPE:
-                            return
+                            g.running = False
                 case pygame.MOUSEMOTION:
-                    rooms[state].action("move", pygame.mouse.get_pos()) 
+                    rooms[g.room].mouse_move(pygame.mouse.get_pos())
                 case pygame.MOUSEBUTTONUP:
-                    rooms[state].action("click", pygame.mouse.get_pos())
-        clock.tick(cc.video.fps) 
-        rooms[state].draw(screen)
+                    rooms[g.room].mouse_click(pygame.mouse.get_pos())
 
-if __name__ == "__main__":
-    pygame.init()
-    run()
+        clock.tick(cc.video.fps) 
+        rooms[g.room].draw(screen)
+
     pygame.quit()

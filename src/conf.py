@@ -19,6 +19,9 @@ class Conf:
         for key in self.__dict__:
             yield key
 
+    def _set(self, key, value):
+        setattr(self, key, value)
+
 cc = None
 with open(os.path.join(os.path.dirname(__file__), CONF_FILE), "r") as f:
     contents = json.load(f)
@@ -32,3 +35,8 @@ with open(os.path.join(os.path.dirname(__file__), CONF_FILE), "r") as f:
     cc.piece.size = (1.4 * cc.tile.radius, 1.4 * cc.tile.radius)
     cc.piece.offset = (-cc.piece.size[0] / 2, -cc.piece.size[1] / 2)
     print(cc)
+
+g = Conf({
+    'room': 0,
+    'running': True,
+})
