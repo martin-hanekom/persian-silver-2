@@ -3,17 +3,18 @@ import json
 import math
 import pygame
 
-colors = {
-    'panel': (pygame.Color('#284A03'), pygame.Color('#284A03')),
-    'background': (pygame.Color('#305904'), pygame.Color('#44691D')),
-    'button': (pygame.Color('#009A17'), pygame.Color('#59A608')),
-    'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
-}
-
-size = {
-    'button': (200, 80),
-    'button_sm': (100, 40),
-}
+class Ui:
+    colors = {
+        'panel': (pygame.Color('#284A03'), pygame.Color('#284A03')),
+        'background': (pygame.Color('#305904'), pygame.Color('#44691D')),
+        'button': (pygame.Color('#009A17'), pygame.Color('#59A608')),
+        'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
+    }
+    size = {
+        'btnSmall': (100, 40),
+        'btn': (150, 60),
+        'btnLarge': (200, 80),
+    }
 
 CONF_FILE = "conf.json"
 
@@ -50,6 +51,9 @@ with open(os.path.join(os.path.dirname(__file__), CONF_FILE), "r") as f:
     print(cc)
 
 g = Conf({
+    'team': 0,
     'room': 0,
     'running': True,
+    'paused': False,
+    'error': '',
 })
