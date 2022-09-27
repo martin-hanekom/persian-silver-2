@@ -2,8 +2,38 @@ import pygame
 import assets
 import utils
 from sprite import Sprite
+from view import View
 from conf import cc, g, Ui
 
+view = View(
+    rect=(300, 500),
+    color=Ui.colors['panel'],
+    children=[
+        View(
+            rect=Ui.size['btnLarge'],
+            color=Ui.colors['btn'],
+            text='Play',
+            font='systeml',
+            callback=g._set,
+            args=['room', 1]
+        ), 
+        View(
+            rect=Ui.size['btnLarge'],
+            color=Ui.colors['btn'],
+            text='Load',
+            font='systeml',
+        ), 
+        View(
+            rect=Ui.size['btnLarge'],
+            color=Ui.colors['btn'],
+            text='Quit',
+            font='systeml',
+            callback=g._set,
+            args=['running', False]
+        ), 
+    ]
+)
+    
 panel = Sprite(
     rect=pygame.Rect(utils.offset(size=cc.video.size, offset=(-150, -250), center=(True, True)), (300, 500)),
     colors=Ui.colors['panel'],
