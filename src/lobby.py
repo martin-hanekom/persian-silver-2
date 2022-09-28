@@ -32,14 +32,14 @@ back_button = Sprite(
 
 host_button = Sprite(
     rect=pygame.Rect(utils.offset(rect=option_panel.rect, offset=(i_padding, 100 + i_padding)), Ui.size['btn']),
-    colors=Ui.colors['button'],
+    colors=Ui.colors['btn'],
     text=assets.fonts['systeml'].render('Host', True, Ui.colors['text'][0]),
     func=server.host,
 )
 
 join_button = Sprite(
     rect=pygame.Rect(utils.offset(rect=option_panel.rect, offset=(host_button.rect.w + 2*i_padding, 100 + i_padding)), Ui.size['btn']),
-    colors=Ui.colors['button'],
+    colors=Ui.colors['btn'],
     text=assets.fonts['systeml'].render('Join', True, Ui.colors['text'][0]),
     func=server.join,
     args=(local_ip, 'test'),

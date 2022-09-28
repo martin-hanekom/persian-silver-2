@@ -7,7 +7,7 @@ class Ui:
     colors = {
         'panel': (pygame.Color('#284A03'), pygame.Color('#284A03')),
         'background': (pygame.Color('#305904'), pygame.Color('#44691D')),
-        'button': (pygame.Color('#009A17'), pygame.Color('#59A608')),
+        'btn': (pygame.Color('#009A17'), pygame.Color('#59A608')),
         'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
     }
     size = {
