@@ -5,25 +5,28 @@ from conf import cc
 
 class View:
     def __init__(self, 
-            rect: (float, float) = None,
+            children: [View] = [],
+            orient: str = 'H',
+            padding: float = Ui.padding,
+            spacing: float = Ui.spacing,
+            size: (float, float) = None,
             surf: pygame.Surface = None,
             text: str = None,
             font: str = 'system',
             pos: (float, float) = None,
             color: list[pygame.Color] = [],
-            center: (bool, bool) = (True, True),
-            padding: (float, float) = (0, 0),
             callback = None,
             args = [],
             kwargs = {}) -> None:
-        ''' children can be sprite, rect, circle, etc. or list of '''
-        self.rect = rect
         self.surf = surf
-        self.text = assets.fonts[font].render(text, True, Ui.colors['text'][0]),
+        self.text = assets.fonts[font].render(text, true, ui.colors['text'][0]) if text else None
         self.pos = pos
         self.color = color
-        self.center = center
+        self.orient = orient
         self.padding = padding
+        self.spacing = spacing
+        self.children = children
+        self.size = size if size else self.get_size()
         self.callback = callback
         self.args = args
         self.kwargs = kwargs
@@ -33,6 +36,11 @@ class View:
         self.parent = parent
         self.pos = self.get_pos()
         self.rect = self.get_rect()
+
+    def get_size(self) -> (float, float):
+        if self.orient == 'H':
+            return (2*self.padding + sum([child.size[0] for child in self.children]) + self.spacing*(len(self.children) + 1),
+                    2*self.padding + 
 
     def get_pos(self) -> (float, float):
         p = self.parent.pos if self.parent else (0, 0)

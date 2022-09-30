@@ -15,6 +15,8 @@ class Ui:
         'btn': (150, 60),
         'btnLarge': (200, 80),
     }
+    padding = 10
+    spacing = 5
 
 CONF_FILE = "conf.json"
 

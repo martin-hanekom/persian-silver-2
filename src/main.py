@@ -13,17 +13,15 @@ if __name__ == '__main__':
 
     while g.running:
         for event in pygame.event.get():
-            match event.type:
-                case pygame.QUIT:
-                    g.running = False 
-                case pygame.KEYDOWN:
-                    match event.key:
-                        case pygame.K_ESCAPE:
-                            g.running = False
-                case pygame.MOUSEMOTION:
-                    rooms[g.room].mouse_move(pygame.mouse.get_pos())
-                case pygame.MOUSEBUTTONUP:
-                    rooms[g.room].mouse_click(pygame.mouse.get_pos())
+            if event.type == pygame.QUIT:
+                g.running = False 
+            elif event.type == pygame.MOUSEMOTION:
+                rooms[g.room].mouse_move(pygame.mouse.get_pos())
+            elif event.type == pygame.MOUSEBUTTONUP:
+                rooms[g.room].mouse_click(pygame.mouse.get_pos())
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    g.running = False
 
         clock.tick(cc.video.fps) 
         rooms[g.room].draw(screen)
