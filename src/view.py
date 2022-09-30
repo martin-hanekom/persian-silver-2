@@ -1,7 +1,8 @@
+from __future__ import annotations
 import pygame
 import math
 import assets
-from conf import cc
+from conf import cc, Ui
 
 class View:
     def __init__(self, 
@@ -14,12 +15,12 @@ class View:
             text: str = None,
             font: str = 'system',
             pos: (float, float) = None,
-            color: list[pygame.Color] = [],
+            color: list[pygame.Color] = Ui.colors['background'],
             callback = None,
             args = [],
             kwargs = {}) -> None:
         self.surf = surf
-        self.text = assets.fonts[font].render(text, true, ui.colors['text'][0]) if text else None
+        self.text = assets.fonts[font].render(text, True, Ui.colors['text'][0]) if text else None
         self.pos = pos
         self.color = color
         self.orient = orient
@@ -31,46 +32,61 @@ class View:
         self.args = args
         self.kwargs = kwargs
         self.hover = False
+        self.rect = None
+        self.center = (0,0)
+        self.text_center = (0,0)
 
     def init(self, parent: View = None):
-        self.parent = parent
-        self.pos = self.get_pos()
-        self.rect = self.get_rect()
+        self.pos = (cc.video.center[0] - self.size[0] / 2, cc.video.center[1] - self.size[1] / 2) if parent is None else parent.get_pos(self)
+        self.center = (self.pos[0] + self.size[0] / 2, self.pos[1] + self.size[1] / 2)
+        if self.text:
+            text_size = self.text.get_size()
+            self.text_center = (self.center[0] - text_size[0] / 2, self.center[1] - text_size[1] / 2)
+        self.rect = pygame.Rect(self.pos, self.size)
+        for child in self.children:
+            child.init(self)
 
     def get_size(self) -> (float, float):
+        if not self.children:
+            return (0, 0)
         if self.orient == 'H':
-            return (2*self.padding + sum([child.size[0] for child in self.children]) + self.spacing*(len(self.children) + 1),
-                    2*self.padding + 
+            maxVSize = max([child.size[1] for child in self.children])
+            return (2 * self.padding + sum([child.size[0] for child in self.children]) + 
+                    self.spacing * (len(self.children) - 1), 2 * self.padding + maxVSize)
+        if self.orient == 'V':
+            maxHSize = max([child.size[0] for child in self.children])
+            return (2 * self.padding + maxHSize, 2 * self.padding +
+                    sum([child.size[1] for child in self.children]) +
+                    self.spacing * (len(self.children) - 1))
 
-    def get_pos(self) -> (float, float):
-        p = self.parent.pos if self.parent else (0, 0)
-        s = self.parent.size() if self.parent else cc.video.size
-        return (p[0] + self.pos[0] + self.center[0] * (s[0] - self.rect[0]) / 2,
-                p[1] + self.pos[1] + self.center[1] * (s[1] - self.rect[0]) / 2)
-
-    def get_pos(self, pos: (float, float), rect: (float, float)) -> (float, float):
-        if pos:
-            return pos
-        elif rect:
-            if self.parent:
-                return (self.parent.pos[0] + self.center[0] * (self.parent.size()[0] - rect[0]) / 2,
-                        self.parent.pos[1] + self.center[1] * (self.parent.size()[1] - rect[1]) / 2)
-            return (self.center[0] * (cc.video.size[0] - rect[0]) / 2, self.center[1] * (cc.video.size[1] - rect[1]) / 2)
-
-    def size(self) -> (float, float):
-        if self.rect:
-            return (self.rect.w, self.rect.h)
-        if self.surf:
-            return self.surf.get_size()
-
-    def intersect(self, pos: (float, float)) -> bool:
-        if self.rect:
-            return self.rect.collidepoint(pos)
-        return False
+    def get_pos(self, child: View) -> (float, float):
+        index = self.children.index(child)
+        if index == -1:
+            return (0, 0)
+        if self.orient == 'H':
+            prevChildren = sum([child.size[0] + self.spacing for child in self.children[:index]])
+            return (self.pos[0] + self.padding + prevChildren, self.pos[1] + self.padding)
+        if self.orient == 'V':
+            prevChildren =  sum([child.size[1] + self.spacing for child in self.children[:index]])
+            return (self.pos[0] + self.padding, self.pos[1] + self.padding + prevChildren)
 
     def draw(self, screen: pygame.Surface) -> None:
-        if self.rect:
-            pygame.draw.rect(screen, self.color[self.hover], self.rect, border_radius=2)
+        pygame.draw.rect(screen, self.color[self.hover], self.rect, border_radius=2)
+        if self.text:
+            screen.blit(self.text, self.text_center)
+        for child in self.children:
+            child.draw(screen)
+
+    def mouse_move(self, pos: (float, float)) -> None:
+        self.hover = self.rect.collidepoint(pos)
+        for child in self.children:
+            child.mouse_move(pos)
+
+    def mouse_click(self, pos: (float, float)) -> None:
+        if self.callback and self.rect.collidepoint(pos):
+            self()
+        for child in self.children:
+            child.mouse_click(pos)
 
     def __call__(self) -> None:
         self.callback(*self.args, **self.kwargs)

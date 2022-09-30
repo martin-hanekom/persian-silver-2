@@ -6,8 +6,9 @@ import pygame
 class Ui:
     colors = {
         'panel': (pygame.Color('#284A03'), pygame.Color('#284A03')),
-        'background': (pygame.Color('#305904'), pygame.Color('#44691D')),
+        'background': (pygame.Color('#305904'), pygame.Color('#305904')),
         'btn': (pygame.Color('#009A17'), pygame.Color('#59A608')),
+        'btnAlt': (pygame.Color('#305904'), pygame.Color('#44691D')),
         'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
     }
     size = {
@@ -15,8 +16,8 @@ class Ui:
         'btn': (150, 60),
         'btnLarge': (200, 80),
     }
-    padding = 10
-    spacing = 5
+    padding = 7
+    spacing = 7
 
 CONF_FILE = "conf.json"
 

@@ -3,9 +3,45 @@ import pygame
 import assets
 import utils
 import server
+from view import View
 from sprite import Sprite
 from conf import cc, g, Ui
 
+view = View(
+    children=[
+        View(
+            children=[
+                View(
+                    size=Ui.size['btnSmall'],
+                    color=Ui.colors['btnAlt'],
+                    text='Back',
+                    callback=g._set,
+                    args=['room', 0],
+                )
+            ],
+            size=(400, cc.video.size[1] - 100),
+            color=Ui.colors['panel'],
+            orient='V',
+        ),
+        View(
+            size=(800, cc.video.size[1] - 100),
+            color=Ui.colors['panel'],
+        )
+    ],
+)
+view.init()
+
+def draw(screen: pygame.Surface):
+    screen.fill(Ui.colors['background'][0])
+    view.draw(screen)
+
+def mouse_move(pos: (float, float)):
+    view.mouse_move(pos)
+
+def mouse_click(pos: (float, float)):
+    view.mouse_click(pos)
+
+'''
 padding = 50
 i_padding = 25
 local_ip = socket.gethostbyname(socket.getfqdn())
@@ -78,3 +114,4 @@ def mouse_click(pos: (float, float)):
     for sprite in components:
         if sprite.func and sprite.intersect(pos):
             sprite()
+'''
