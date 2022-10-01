@@ -7,6 +7,11 @@ from view import View
 from sprite import Sprite
 from conf import cc, g, Ui
 
+model = {
+    'host': False,
+    'join': False,
+}
+
 view = View(
     children=[
         View(
@@ -17,7 +22,24 @@ view = View(
                     text='Back',
                     callback=g._set,
                     args=['room', 0],
-                )
+                ),
+                View(
+                    text='Would you like to host or join?',
+                ),
+                View(
+                    children=[
+                        View(
+                            size=Ui.size['btn'],
+                            color=Ui.colors['btn'],
+                            text='Host',
+                        ),
+                        View(
+                            size=Ui.size['btn'],
+                            color=Ui.colors['btn'],
+                            text='Join',
+                        ),
+                    ],
+                ),
             ],
             size=(400, cc.video.size[1] - 100),
             color=Ui.colors['panel'],

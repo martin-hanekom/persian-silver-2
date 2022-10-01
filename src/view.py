@@ -15,7 +15,7 @@ class View:
             text: str = None,
             font: str = 'system',
             pos: (float, float) = None,
-            color: list[pygame.Color] = Ui.colors['background'],
+            color: list[pygame.Color] = None,
             callback = None,
             args = [],
             kwargs = {}) -> None:
@@ -39,6 +39,8 @@ class View:
     def init(self, parent: View = None):
         self.pos = (cc.video.center[0] - self.size[0] / 2, cc.video.center[1] - self.size[1] / 2) if parent is None else parent.get_pos(self)
         self.center = (self.pos[0] + self.size[0] / 2, self.pos[1] + self.size[1] / 2)
+        if not self.color:
+            self.color = parent.color if parent else Ui.colors['background']
         if self.text:
             text_size = self.text.get_size()
             self.text_center = (self.center[0] - text_size[0] / 2, self.center[1] - text_size[1] / 2)
@@ -48,6 +50,8 @@ class View:
 
     def get_size(self) -> (float, float):
         if not self.children:
+            if self.text:
+                return self.text.get_size()
             return (0, 0)
         if self.orient == 'H':
             maxVSize = max([child.size[1] for child in self.children])
