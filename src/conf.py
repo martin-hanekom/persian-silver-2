@@ -12,9 +12,9 @@ class Ui:
         'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
     }
     size = {
-        'btnSmall': (100, 40),
-        'btn': (150, 60),
-        'btnLarge': (200, 80),
+        'btnSmall': (80, 40),
+        'btn': (120, 50),
+        'btnLarge': (180, 70),
     }
     padding = 7
     spacing = 7

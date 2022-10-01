@@ -33,7 +33,7 @@ view = View(
     color=Ui.colors['panel'],
     orient='V',
 )
-view.init()
+view.update()
     
 def draw(screen: pygame.Surface):
     screen.fill(Ui.colors['background'][0])
