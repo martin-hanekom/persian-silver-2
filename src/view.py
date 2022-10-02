@@ -45,6 +45,7 @@ class View:
         self.center = (0,0)
         self.text_center = (0,0)
         self.hook = [0,0]
+        self.clicked = False
 
     def update(self, parent: View = None):
         if not self.enabled():
@@ -131,13 +132,21 @@ class View:
         for child in self.children:
             child.mouse_move(pos)
 
-    def mouse_click(self, pos: (float, float)) -> None:
+    def mouse_down(self, pos: (float, float)) -> None:
+        self.clicked = self.enabled()
+        #print(f'pos: {self.pos}, clicked: {self.clicked}')
+        if self.clicked:
+            for child in self.children:
+                child.mouse_down(pos)
+
+    def mouse_up(self, pos: (float, float)) -> None:
         if not self.enabled():
             return
-        if self.callback and self.rect.collidepoint(pos):
+        if self.clicked and self.callback and self.rect.collidepoint(pos):
             self()
+        self.clicked = False
         for child in self.children:
-            child.mouse_click(pos)
+            child.mouse_up(pos)
 
     def __call__(self) -> None:
         self.callback(*self.args, **self.kwargs)

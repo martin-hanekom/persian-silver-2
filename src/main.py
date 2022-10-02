@@ -1,22 +1,16 @@
 import threading
 import pygame
-from conf import cc, g
-
-threads = []
+from conf import G, Ui
 
 if __name__ == '__main__':
     pygame.init()
-    screen = pygame.display.set_mode(cc.video.size)
+    G.screen = pygame.display.set_mode(Ui.size['screen'])
 
     import assets
     import menu
-    import lobby
+    menu.init()
 
-    thread = threading.Thread(target=menu.run, args=(screen,))
-    thread.start()
-    threads.append(thread)
-
-    for thread in threads:
+    for thread in G.threads:
         thread.join()
 
     pygame.quit()

@@ -1,18 +1,29 @@
+import threading
 import pygame
 import assets
 import utils
-from sprite import Sprite
 from view import View
-from conf import cc, g, Ui
+from conf import G, Ui
 
-model = {
-    'main_menu': True,
-    'play_menu': False,
-}
+view: View = None
+model: dict = {}
 
-def set_model(changes: dict):
-    model.update(changes)
+def set_model(**kwargs):
+    global model, view
+    model.update(**kwargs)
     view.update()
+
+def singleplayer():
+    global model
+    import client
+    client.init()
+    model['running'] = False
+
+def multiplayer():
+    global model
+    import lobby
+    lobby.init()
+    model['running'] = False
 
 def get_view() -> View:
     return View(
@@ -26,7 +37,7 @@ def get_view() -> View:
                         text='Play',
                         font='systeml',
                         callback=set_model,
-                        args=[{'main_menu': False, 'play_menu': True}],
+                        kwargs={'main_menu': False, 'play_menu': True},
                     ), 
                     View(
                         size=Ui.size['btnLarge'],
@@ -39,8 +50,8 @@ def get_view() -> View:
                         color=Ui.colors['btn'],
                         text='Quit',
                         font='systeml',
-                        callback=g._set,
-                        args=['running', False],
+                        callback=set_model,
+                        kwargs={'running', False},
                     ), 
                 ],
                 show_if='main_menu',
@@ -56,16 +67,14 @@ def get_view() -> View:
                                 color=Ui.colors['btn'],
                                 text='Singleplayer',
                                 font='systeml',
-                                #callback=g._set,
-                                #args=['room', 1],
+                                callback=singleplayer,
                             ),
                             View(
                                 size=Ui.size['btnLarge'],
                                 color=Ui.colors['btn'],
                                 text='Multiplayer',
                                 font='systeml',
-                                callback=g._set,
-                                args=['room', 1],
+                                callback=multiplayer,
                             ),
                         ],
                         padding=0,
@@ -75,7 +84,7 @@ def get_view() -> View:
                         color=Ui.colors['btnAlt'],
                         text='Cancel',
                         callback=set_model,
-                        args=[{'main_menu': True, 'play_menu': False}],
+                        kwargs={'main_menu': True, 'play_menu': False},
                     ),
                 ],
                 show_if='play_menu',
@@ -85,24 +94,14 @@ def get_view() -> View:
         ],
     )
 
-def run(screen: pygame.Surface):
-    clock = pygame.time.Clock()
+def init():
+    global model, view
+    model = {
+        'running': True,
+        'main_menu': True,
+        'play_menu': False,
+    }
     view = get_view()
-    view.update()
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return
-            elif event.type == pygame.MOUSEMOTION:
-                view.mouse_move(pygame.mouse.get_pos())
-            elif event.type == pygame.MOUSEBUTTONUP:
-                view.mouse_click(pygame.mouse.get_pos())
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return
-
-        clock.tick(cc.video.fps) 
-        screen.fill(Ui.colors['background'][0])
-        view.draw(screen)
-        pygame.display.update()
+    thread = threading.Thread(target=G.run, args=[model, view])
+    thread.start()
+    G.threads.append(thread)

@@ -1,6 +1,7 @@
 import os
 import json
 import math
+import threading
 import pygame
 
 class Ui:
@@ -12,12 +13,43 @@ class Ui:
         'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
     }
     size = {
+        'screen': (1300, 900),
         'btnSmall': (80, 40),
         'btn': (120, 50),
         'btnLarge': (180, 70),
+        'board': (900, 900),
     }
+    fps = 30
     padding = 7
     spacing = 7
+
+class G:
+    threads: list[threading.Thread] = []
+    screen: pygame.Surface = None
+
+    @staticmethod
+    def run(model, view):
+        clock = pygame.time.Clock()
+        view.update()
+
+        while model['running']:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                elif event.type == pygame.MOUSEMOTION:
+                    view.mouse_move(pygame.mouse.get_pos())
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    view.mouse_down(pygame.mouse.get_pos())
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    view.mouse_up(pygame.mouse.get_pos())
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return
+
+            clock.tick(Ui.fps)
+            G.screen.fill(Ui.colors['background'][0])
+            view.draw(G.screen)
+            pygame.display.update()
 
 CONF_FILE = "conf.json"
 
