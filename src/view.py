@@ -10,7 +10,8 @@ class View:
             orient: str = 'H',
             padding: float = Ui.padding,
             spacing: float = Ui.spacing,
-            size: (float, float) = None,
+            anchor: (bool, bool, bool, bool) = (False, False, False, False),  # top, right, bottom, left
+            size: (float, float) = (0, 0),
             surf: pygame.Surface = None,
             text: str = None,
             font: str = 'system',
@@ -29,7 +30,8 @@ class View:
         self.padding = padding
         self.spacing = spacing
         self.children = children
-        self.size = size if size else self.get_size()
+        self.box_size = self.get_size()
+        self.size = size if sum(size) > sum(self.box_size) else self.box_size
         self.model = model
         self.show_if = show_if
         self.callback = callback
@@ -39,16 +41,20 @@ class View:
         self.rect = None
         self.center = (0,0)
         self.text_center = (0,0)
+        print(f'box_size: {self.box_size}, size: {self.size}')
 
     def update(self, parent: View = None):
         if parent and not bool(self.model):
             self.model = parent.model
         if not self.enabled():
             return
-        self.pos = (cc.video.center[0] - self.size[0] / 2, cc.video.center[1] - self.size[1] / 2) if parent is None else parent.get_pos(self)
+        self.box_size = self.get_size()
+        self.size = self.size if sum(self.size) > sum(self.box_size) else self.box_size
+        self.pos = (0, 0) if parent is None else parent.get_pos(self)
         self.center = (self.pos[0] + self.size[0] / 2, self.pos[1] + self.size[1] / 2)
         if not self.color:
             self.color = parent.color if parent else Ui.colors['background']
+        print(f'size: {self.size}, box_size: {self.box_size}, pos: {self.pos}, center: {self.center}, color: {self.color[0]}')
         if self.text:
             text_size = self.text.get_size()
             self.text_center = (self.center[0] - text_size[0] / 2, self.center[1] - text_size[1] / 2)
@@ -66,33 +72,35 @@ class View:
             child.draw(screen)
 
     def get_size(self) -> (float, float):
-        if not self.children:
+        enabled_children = list(filter(lambda child: child.enabled(), self.children))
+        if not enabled_children:
             if self.text:
                 return self.text.get_size()
             return (0, 0)
         if self.orient == 'H':
-            maxVSize = max([child.size[1] for child in self.children])
-            return (2 * self.padding + sum([child.size[0] for child in self.children]) + 
+            maxVSize = max([child.size[1] for child in enabled_children])
+            return (2 * self.padding + sum([child.size[0] for child in enabled_children]) + 
                     self.spacing * (len(self.children) - 1), 2 * self.padding + maxVSize)
         if self.orient == 'V':
-            maxHSize = max([child.size[0] for child in self.children])
+            maxHSize = max([child.size[0] for child in enabled_children])
             return (2 * self.padding + maxHSize, 2 * self.padding +
-                    sum([child.size[1] for child in self.children]) +
+                    sum([child.size[1] for child in enabled_children]) +
                     self.spacing * (len(self.children) - 1))
 
     def get_pos(self, child: View) -> (float, float):
         index = self.children.index(child)
         if index == -1:
             return (0, 0)
+        enabled_children = list(filter(lambda child: child.enabled(), self.children[:index]))
         if self.orient == 'H':
-            prevChildren = sum([child.size[0] + self.spacing for child in self.children[:index] if child.enabled()])
-            return (self.pos[0] + self.padding + prevChildren, self.pos[1] + self.padding)
+            prevChildren = sum([child.size[0] + self.spacing for child in enabled_children])
+            return (self.center[0] - self.box_size[0] / 2 + self.padding + prevChildren, self.center[1] - self.box_size[1] / 2 + self.padding)
         if self.orient == 'V':
-            prevChildren =  sum([child.size[1] + self.spacing for child in self.children[:index] if child.enabled()])
-            return (self.pos[0] + self.padding, self.pos[1] + self.padding + prevChildren)
+            prevChildren =  sum([child.size[1] + self.spacing for child in enabled_children])
+            return (self.center[0] - self.box_size[0] / 2 + self.padding, self.center[1] - self.box_size[1] / 2 + self.padding + prevChildren)
 
     def enabled(self) -> bool:
-        return not self.show_if or self.model.get(self.show_if)
+        return not self.show_if or self.model.get(self.show_if, True)
 
     def mouse_move(self, pos: (float, float)) -> None:
         if not self.enabled():
