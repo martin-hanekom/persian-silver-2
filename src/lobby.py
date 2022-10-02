@@ -75,10 +75,12 @@ view = View(
             size=(400, cc.video.size[1] - 100),
             color=Ui.colors['panel'],
             orient='V',
+            anchor=(1, 1),
         ),
         View(
             size=(800, cc.video.size[1] - 100),
             color=Ui.colors['panel'],
+            anchor=(1, 1),
         )
     ],
 )
