@@ -2,9 +2,9 @@ from view import Model, Room, View
 from conf import Ui
 
 class Menu(Room):
-    def __init__(self):
-        super().__init__()
-        self.model = Model(running=True, main_menu=True, play_menu=False)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model = Model(main_menu=True, play_menu=False)
         self.view =  View(
             model=self.model,
             children=[
@@ -75,9 +75,9 @@ class Menu(Room):
 
 
     def singleplayer(self):
-        Room.spawn('Client')
-        model.running = False
+        Room.spawn('Client', self)
+        self.model.running = False
 
     def multiplayer(self):
-        Room.spawn('Lobby')
-        model.running = False
+        Room.spawn('Lobby', self)
+        self.model.running = False

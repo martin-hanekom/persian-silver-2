@@ -1,23 +1,12 @@
-import threading
-import pygame
-import assets
-import utils
-from view import View
-from room import Room
-from conf import G, Ui
-
-view: View = None
-model: dict = {
-    'running': True,
-}
+from view import Model, Room, View
+from conf import Ui
 
 class Client(Room):
-    def __init__(self):
-        self.model = {
-            'running': True,
-        }
-        self.view = View(
-            model=model,
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model = Model(main_menu=True, play_menu=False)
+        self.view =  View(
+            model=self.model,
             children=[
                 View(
                     size=Ui.size['board'],
@@ -30,13 +19,3 @@ class Client(Room):
                 ),
             ],
         )
-
-def init():
-    global model, view
-    model = {
-        'running': True,
-    }
-    view = get_view()
-    thread = threading.Thread(target=G.run, args=[model, view])
-    thread.start()
-    G.threads.append(thread)

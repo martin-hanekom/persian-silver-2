@@ -165,8 +165,9 @@ class Room(Thread):
     rooms: list[Room] = []
     screen: pygame.Surface = None
 
-    def __init__(self) -> None:
+    def __init__(self, parent: Room = None) -> None:
         super().__init__()
+        self.parent = parent.__class__.__name__ if parent else None
 
     @staticmethod
     def init() -> None:
@@ -179,10 +180,10 @@ class Room(Thread):
         pygame.quit()
 
     @staticmethod
-    def spawn(classname: str) -> None:
+    def spawn(classname: str, parent: Room = None) -> None:
         """ CamelCase classname, e.g. Menu """
         module = __import__(classname.lower())
-        room = getattr(module, classname)()
+        room = getattr(module, classname)(parent)
         room.start()
         Room.rooms.append(room)
         
@@ -192,7 +193,7 @@ class Room(Thread):
         while self.model.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return self.back()
+                    return
                 elif event.type == pygame.MOUSEMOTION:
                     self.view.mouse_motion(pygame.mouse.get_pos())
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -206,7 +207,7 @@ class Room(Thread):
             self.screen.fill(Ui.colors['background'][0])
             self.view.draw(Room.screen)
             pygame.display.update()
-        Room.rooms.remove(self)
+        #Room.rooms.remove(self)
 
     def update(self, dt: float):
         pass
@@ -216,4 +217,6 @@ class Room(Thread):
         self.view.update()
                     
     def back(self) -> None:
-        pass
+        if self.parent:
+            Room.spawn(self.parent)
+            self.model.running = False
