@@ -1,8 +1,17 @@
 from __future__ import annotations
 import pygame
-import math
-import assets
-from conf import cc, Ui
+from assets import Assets
+from threading import Thread
+from conf import Ui
+
+class Model:
+    def __init__(self, **kwargs):
+        self.running = True
+        self.set(**kwargs)
+
+    def set(self, **kwargs):
+        {setattr(self, key, value) for key, value in kwargs.items()}
+
 
 class View:
     def __init__(self, 
@@ -24,7 +33,7 @@ class View:
             args = [],
             kwargs = {}) -> None:
         self.surf = surf
-        self.text = assets.fonts[font].render(text, True, Ui.colors['text'][0]) if text else None
+        self.text = Assets.fonts[font].render(text, True, Ui.colors['text'][0]) if text else None
         self.pos = pos
         self.color = color
         self.orient = orient
@@ -99,7 +108,7 @@ class View:
 
     def get_size(self, size: (float, float), parent: View = None) -> (float, float):
         if self.filled:
-            return parent.size if parent else cc.video.size
+            return parent.size if parent else Ui.size['screen']
         return size if sum(size) > sum(self.box_size) else self.box_size
 
     def get_pos(self, child: View) -> (float, float):
@@ -123,30 +132,88 @@ class View:
                 child.set_model(self.model)
 
     def enabled(self) -> bool:
-        return not self.show_if or self.model.get(self.show_if, True)
+        return not self.show_if or getattr(self.model, self.show_if, True)
 
-    def mouse_move(self, pos: (float, float)) -> None:
+    def mouse_motion(self, pos: (float, float)) -> None:
         if not self.enabled():
             return
         self.hover = self.rect.collidepoint(pos)
         for child in self.children:
-            child.mouse_move(pos)
+            child.mouse_motion(pos)
 
-    def mouse_down(self, pos: (float, float)) -> None:
+    def mouse_button_down(self, pos: (float, float)) -> None:
         self.clicked = self.enabled()
         #print(f'pos: {self.pos}, clicked: {self.clicked}')
         if self.clicked:
             for child in self.children:
-                child.mouse_down(pos)
+                child.mouse_button_down(pos)
 
-    def mouse_up(self, pos: (float, float)) -> None:
+    def mouse_button_up(self, pos: (float, float)) -> None:
         if not self.enabled():
             return
         if self.clicked and self.callback and self.rect.collidepoint(pos):
             self()
         self.clicked = False
         for child in self.children:
-            child.mouse_up(pos)
+            child.mouse_button_up(pos)
 
     def __call__(self) -> None:
         self.callback(*self.args, **self.kwargs)
+
+
+class Room(Thread):
+    rooms: list[Room] = []
+    screen: pygame.Surface = None
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    @staticmethod
+    def init() -> None:
+        pygame.init()
+        Room.screen = pygame.display.set_mode(Ui.size['screen'])
+        Assets.init()
+        Room.spawn('Menu')
+        for room in Room.rooms:
+            room.join()
+        pygame.quit()
+
+    @staticmethod
+    def spawn(classname: str) -> None:
+        """ CamelCase classname, e.g. Menu """
+        module = __import__(classname.lower())
+        room = getattr(module, classname)()
+        room.start()
+        Room.rooms.append(room)
+        
+    def run(self) -> None:
+        clock = pygame.time.Clock()
+        self.view.update()
+        while self.model.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return self.back()
+                elif event.type == pygame.MOUSEMOTION:
+                    self.view.mouse_motion(pygame.mouse.get_pos())
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    self.view.mouse_button_down(pygame.mouse.get_pos())
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    self.view.mouse_button_up(pygame.mouse.get_pos())
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return self.back()
+            self.update(clock.tick(Ui.fps))
+            self.screen.fill(Ui.colors['background'][0])
+            self.view.draw(Room.screen)
+            pygame.display.update()
+        Room.rooms.remove(self)
+
+    def update(self, dt: float):
+        pass
+
+    def set_model(self, **kwargs):
+        self.model.set(**kwargs)
+        self.view.update()
+                    
+    def back(self) -> None:
+        pass
