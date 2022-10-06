@@ -15,16 +15,14 @@ class Board(Room):
                     children=[
                         Tile(
                             coordinate=Coordinate(0, 0, 0),
-                            callback=select_tile,
                             color=Ui.colors['tile'][0],
-                            args=[(0, 0, 0)],
+                            callback=select_tile,
                         )
                     ] + [
                         Tile(
                             coordinate=Coordinate(i, j, k),
                             color=Ui.colors['tile'][k % 2],
                             callback=select_tile,
-                            args=[(i, j, k)],
                         ) for i in range(j) 
                         for j in range(1, Ui.board['layers'])
                         for k in range(Ui.board['sectors'])
@@ -41,6 +39,9 @@ class Board(Room):
             ],
         )
         Coordinate.init(self.view.get('board').center)
+
+    def select_tile(tile: Tile) -> None:
+        pass
 
 """
 class Tile:

@@ -5,6 +5,11 @@
   },
   "player": {
     "amount": 3,
+    "start": {
+      "gold": 10,
+      "food": 10,
+      "fuel": 10
+    },
     "turn": {
       "max": 30,
       "warning": 5

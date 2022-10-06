@@ -2,12 +2,13 @@ from __future__ import annotations
 from threading import Thread
 import pygame
 from assets import Assets
-from conf import Ui
+from conf import Ui, cc
 
 class Game:
     rooms: list[Room] = []
     players: list[Player] = []
     screen: pygame.Surface = None
+    turn: int = 0
 
     @staticmethod
     def init() -> None:
@@ -20,3 +21,6 @@ class Game:
         for room in Game.rooms:
             room.join()
         pygame.quit()
+
+    def next_turn() -> None:
+        Game.turn = (Game.turn + 1) % cc.players.amount

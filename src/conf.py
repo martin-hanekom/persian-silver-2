@@ -1,7 +1,6 @@
 import os
 import json
 import math
-import threading
 import pygame
 
 class Ui:
@@ -11,7 +10,8 @@ class Ui:
         'btn': (pygame.Color('#009A17'), pygame.Color('#59A608')),
         'btnAlt': (pygame.Color('#305904'), pygame.Color('#44691D')),
         'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
-        'tile': [(pygame.Color('#'), pygame.Color('#')), (pygame.Color('#'), pygame.Color('#'))],
+        'tile': [(pygame.Color('#009A17'), pygame.Color('#7AB739')),
+                 (pygame.Color('#5AA608'), pygame.Color('#7AB739'))],
     }
     size = {
         'screen': (1300, 900),
@@ -27,35 +27,6 @@ class Ui:
         'layers': 5,
         'sectors': 6,
     }
-
-
-class G:
-    threads: list[threading.Thread] = []
-    screen: pygame.Surface = None
-
-    @staticmethod
-    def run(model, view):
-        clock = pygame.time.Clock()
-        view.update()
-
-        while model['running']:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return
-                elif event.type == pygame.MOUSEMOTION:
-                    view.mouse_move(pygame.mouse.get_pos())
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    view.mouse_down(pygame.mouse.get_pos())
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    view.mouse_up(pygame.mouse.get_pos())
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        return
-
-            clock.tick(Ui.fps)
-            G.screen.fill(Ui.colors['background'][0])
-            view.draw(G.screen)
-            pygame.display.update()
 
 CONF_FILE = "conf.json"
 

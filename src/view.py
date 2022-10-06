@@ -173,6 +173,7 @@ class Tile(View):
 
     def update(self, parent: View = None) -> None:
         super().update(parent)
+        self.args = [self]
         self.coordinate.update()
         point_angle = -math.pi / 3
         self.polygon = []
