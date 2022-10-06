@@ -23,6 +23,7 @@ class Ui:
     padding = 7
     spacing = 7
 
+
 class G:
     threads: list[threading.Thread] = []
     screen: pygame.Surface = None
@@ -84,11 +85,3 @@ with open(os.path.join(os.path.dirname(__file__), CONF_FILE), "r") as f:
     cc.piece.size = (1.4 * cc.tile.radius, 1.4 * cc.tile.radius)
     cc.piece.offset = (-cc.piece.size[0] / 2, -cc.piece.size[1] / 2)
     print(cc)
-
-g = Conf({
-    'team': 0,
-    'room': 0,
-    'running': True,
-    'paused': False,
-    'error': '',
-})

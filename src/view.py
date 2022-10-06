@@ -1,7 +1,6 @@
 from __future__ import annotations
 import pygame
 from assets import Assets
-from threading import Thread
 from conf import Ui
 
 class Model:
@@ -11,7 +10,6 @@ class Model:
 
     def set(self, **kwargs):
         {setattr(self, key, value) for key, value in kwargs.items()}
-
 
 class View:
     def __init__(self, 
@@ -29,6 +27,7 @@ class View:
             color: list[pygame.Color] = None,
             model: dict = {},
             show_if: str = None,
+            name: str = '',
             callback = None,
             args = [],
             kwargs = {}) -> None:
@@ -46,6 +45,7 @@ class View:
         self.box_size = self.get_box_size()
         self.size= self.get_size(size)
         self.show_if = show_if
+        self.name = name
         self.callback = callback
         self.args = args
         self.kwargs = kwargs
@@ -89,6 +89,15 @@ class View:
             screen.blit(self.text, self.text_center)
         for child in self.children:
             child.draw(screen)
+
+    def get(self, name: str) -> View:
+        if self.name == name:
+            return self
+        for child in self.children:
+            res = child.get(name)
+            if res:
+                return res
+        return None
 
     def get_box_size(self) -> (float, float):
         enabled_children = list(filter(lambda child: child.enabled(), self.children))
@@ -161,62 +170,3 @@ class View:
         self.callback(*self.args, **self.kwargs)
 
 
-class Room(Thread):
-    rooms: list[Room] = []
-    screen: pygame.Surface = None
-
-    def __init__(self, parent: Room = None) -> None:
-        super().__init__()
-        self.parent = parent.__class__.__name__ if parent else None
-
-    @staticmethod
-    def init() -> None:
-        pygame.init()
-        Room.screen = pygame.display.set_mode(Ui.size['screen'])
-        Assets.init()
-        Room.spawn('Menu')
-        for room in Room.rooms:
-            room.join()
-        pygame.quit()
-
-    @staticmethod
-    def spawn(classname: str, parent: Room = None) -> None:
-        """ CamelCase classname, e.g. Menu """
-        module = __import__(classname.lower())
-        room = getattr(module, classname)(parent)
-        room.start()
-        Room.rooms.append(room)
-        
-    def run(self) -> None:
-        clock = pygame.time.Clock()
-        self.view.update()
-        while self.model.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return
-                elif event.type == pygame.MOUSEMOTION:
-                    self.view.mouse_motion(pygame.mouse.get_pos())
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    self.view.mouse_button_down(pygame.mouse.get_pos())
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    self.view.mouse_button_up(pygame.mouse.get_pos())
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        return self.back()
-            self.update(clock.tick(Ui.fps))
-            self.screen.fill(Ui.colors['background'][0])
-            self.view.draw(Room.screen)
-            pygame.display.update()
-        #Room.rooms.remove(self)
-
-    def update(self, dt: float):
-        pass
-
-    def set_model(self, **kwargs):
-        self.model.set(**kwargs)
-        self.view.update()
-                    
-    def back(self) -> None:
-        if self.parent:
-            Room.spawn(self.parent)
-            self.model.running = False

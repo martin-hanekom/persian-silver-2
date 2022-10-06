@@ -1,4 +1,6 @@
-from view import Model, Room, View
+from game import Game
+from room import Room
+from view import Model, View
 from conf import Ui
 
 class Menu(Room):
