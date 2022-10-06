@@ -161,12 +161,27 @@ class View:
         if not self.enabled():
             return
         if self.clicked and self.callback and self.rect.collidepoint(pos):
-            self()
+            self.callback(*self.args, **self.kwargs)
         self.clicked = False
         for child in self.children:
             child.mouse_button_up(pos)
 
-    def __call__(self) -> None:
-        self.callback(*self.args, **self.kwargs)
+class Tile(View):
+    def __init__(self, coordinate: Coordinate, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.coordinate = coordinate
 
+    def update(self, parent: View = None) -> None:
+        super().update(parent)
+        self.coordinate.update()
+        point_angle = -math.pi / 3
+        self.polygon = []
+        for i in range(6):
+            first = self.coordinate.tile_point(point_angle)
+            point_angle += (math.pi / 3) % (2 * math.pi)
+            second = self.coordinate.tile_point(point_angle)
+            self.polygon.append((self.coordinate.to_pos(), first, second))
 
+    def draw(self, screen: pygame.Surface) -> None:
+        for point in self.polygon:
+            pygame.draw.polygon(screen, self.color[self.hover], point)

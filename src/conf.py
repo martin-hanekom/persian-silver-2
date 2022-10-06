@@ -11,6 +11,7 @@ class Ui:
         'btn': (pygame.Color('#009A17'), pygame.Color('#59A608')),
         'btnAlt': (pygame.Color('#305904'), pygame.Color('#44691D')),
         'text': (pygame.Color('#DCE9CD'), pygame.Color('#DCE9CD')),
+        'tile': [(pygame.Color('#'), pygame.Color('#')), (pygame.Color('#'), pygame.Color('#'))],
     }
     size = {
         'screen': (1300, 900),
@@ -22,6 +23,10 @@ class Ui:
     fps = 30
     padding = 7
     spacing = 7
+    board = {
+        'layers': 5,
+        'sectors': 6,
+    }
 
 
 class G:

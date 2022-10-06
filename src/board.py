@@ -1,6 +1,7 @@
 import math
 from room import Room
-from view import Model, View
+from view import Model, View, Tile
+from utils import Coordinate
 from conf import Ui, cc
 
 class Board(Room):
@@ -11,6 +12,23 @@ class Board(Room):
             model=self.model,
             children=[
                 View(
+                    children=[
+                        Tile(
+                            coordinate=Coordinate(0, 0, 0),
+                            callback=select_tile,
+                            color=Ui.colors['tile'][0],
+                            args=[(0, 0, 0)],
+                        )
+                    ] + [
+                        Tile(
+                            coordinate=Coordinate(i, j, k),
+                            color=Ui.colors['tile'][k % 2],
+                            callback=select_tile,
+                            args=[(i, j, k)],
+                        ) for i in range(j) 
+                        for j in range(1, Ui.board['layers'])
+                        for k in range(Ui.board['sectors'])
+                    ],
                     size=Ui.size['board'],
                     text='Board',
                     name='board',
@@ -22,17 +40,9 @@ class Board(Room):
                 ),
             ],
         )
-        Position.init(self.view.get('board').center)
-        self.view.get('board').children = self.generate_tiles()
+        Coordinate.init(self.view.get('board').center)
 
-
-    def generate_tiles(self) -> list[View]:
-        self.tiles = [[[Tile(Position(0,0,0))]]] + [[[Tile(Position(sector, layer, index))
-            for index in range(layer)]
-            for layer in range(1, cc.board.layers + 1)]
-            for sector in range(cc.board.sectors)]
-        
-
+"""
 class Tile:
     def __init__(self, pos: Position):
         self.pos = pos
@@ -47,7 +57,7 @@ class Tile:
         self.hover = False
 
     def get_point(self, angle: float) -> (float, float):
-        """ get tuple pos from radius and arbitrary angle """
+        # get tuple pos from radius and arbitrary angle
         return (math.ceil(self.pos.x + cc.tile.radius * math.cos(angle)), math.ceil(self.pos.y + cc.tile.radius * math.sin(angle)))
 
     def draw(self, screen: pygame.Surface):
@@ -64,12 +74,10 @@ class Tile:
         self.hover = self.pos.circle_intersect(cc.tile.side, mouse_pos)
 
     def mouse_clicked(self, mouse_pos: (float, float)):
-        pass
-        """
         self.state.selected = self.pos.circle_intersect(cc.tile.side, mouse_pos)
         if self.state.selected:
             if g().state.menu:
                 g().buy_piece(self.pos)
             else:
                g().board_select(None) 
-        """
+"""
