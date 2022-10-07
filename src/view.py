@@ -1,7 +1,8 @@
 from __future__ import annotations
+import math
 import pygame
 from assets import Assets
-from conf import Ui
+from conf import Ui, cc
 
 class Model:
     def __init__(self, **kwargs):
@@ -147,8 +148,9 @@ class View:
         if not self.enabled():
             return
         self.hover = self.rect.collidepoint(pos)
-        for child in self.children:
-            child.mouse_motion(pos)
+        if self.hover:
+            for child in self.children:
+                child.mouse_motion(pos)
 
     def mouse_button_down(self, pos: (float, float)) -> None:
         self.clicked = self.enabled()
@@ -186,3 +188,11 @@ class Tile(View):
     def draw(self, screen: pygame.Surface) -> None:
         for point in self.polygon:
             pygame.draw.polygon(screen, self.color[self.hover], point)
+
+    def mouse_motion(self, pos: (float, float)) -> None:
+        if not self.enabled():
+            return
+        self.hover = self.coordinate.circle_intersect(cc.tile.side, pos)
+        if self.hover:
+            for child in self.children:
+                child.mouse_motion(pos)

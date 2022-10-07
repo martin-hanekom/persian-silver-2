@@ -77,7 +77,7 @@ class Menu(Room):
 
 
     def singleplayer(self):
-        Room.spawn('Client', self)
+        Room.spawn('Board', self)
         self.model.running = False
 
     def multiplayer(self):

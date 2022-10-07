@@ -33,7 +33,9 @@ class Coordinate:
         Coordinate.center = center
 
     def update(self):
-        self.x = Coordinate.center[0] + 2 * (cc.tile.side + cc.tile.padding) * (self.layer * math.sin(sector_a) + self.index * math.sin(index_a)):
+        sector_a = self.sector * math.pi / 3
+        index_a = sector_a + 2 * math.pi / 3
+        self.x = Coordinate.center[0] + 2 * (cc.tile.side + cc.tile.padding) * (self.layer * math.sin(sector_a) + self.index * math.sin(index_a))
         self.y = Coordinate.center[1] - 2 * (cc.tile.side + cc.tile.padding) * (self.layer * math.cos(sector_a) + self.index * math.cos(index_a))
     
     def to_pos(self, offset: (float, float) = (0, 0)) -> (float, float):

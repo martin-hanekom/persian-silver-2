@@ -24,7 +24,7 @@ class Ui:
     padding = 7
     spacing = 7
     board = {
-        'layers': 5,
+        'layers': 6,
         'sectors': 6,
     }
 

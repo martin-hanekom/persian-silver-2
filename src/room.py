@@ -20,6 +20,7 @@ class Room(Thread):
     def run(self) -> None:
         clock = pygame.time.Clock()
         self.view.update()
+        self.init()
         while self.model.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -37,6 +38,10 @@ class Room(Thread):
             Game.screen.fill(Ui.colors['background'][0])
             self.view.draw(Game.screen)
             pygame.display.update()
+
+    def init(self):
+        """ extra room specific configuration """
+        pass
 
     def update(self, dt: float):
         pass
