@@ -14,7 +14,7 @@ class Ui:
                  (pygame.Color('#5AA608'), pygame.Color('#7AB739'))],
     }
     size = {
-        'screen': (1300, 900),
+        'screen': (1360, 900),
         'btnSmall': (80, 40),
         'btn': (120, 50),
         'btnLarge': (180, 70),

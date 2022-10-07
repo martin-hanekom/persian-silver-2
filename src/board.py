@@ -1,4 +1,5 @@
 import math
+from game import Game
 from room import Room
 from view import Model, View, Tile
 from utils import Coordinate
@@ -32,9 +33,20 @@ class Board(Room):
                     name='board',
                 ),
                 View(
+                    children=[
+                        View(
+                            size=Ui.size['btnLarge'],
+                            color=Ui.colors['btn'],
+                            text='End turn',
+                            font='systeml',
+                            callback=Game.next_turn,
+                        ),
+                    ],
                     size=(Ui.size['screen'][0] - Ui.size['board'][0] - 50, Ui.size['screen'][1] - 50),
                     color=Ui.colors['panel'],
                     text='ui',
+                    anchor=(View.A_CENTER, View.A_BOTTOM),
+                    orient='V',
                 ),
             ],
         )
@@ -45,3 +57,7 @@ class Board(Room):
 
     def select_tile(tile: Tile) -> None:
         pass
+
+    def back(self) -> None:
+        Game.end_game.set()
+        super().back()

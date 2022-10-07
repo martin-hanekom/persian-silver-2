@@ -1,6 +1,7 @@
 from game import Game
 from room import Room
 from view import Model, View
+from player import Player
 from conf import Ui
 
 class Menu(Room):
@@ -78,6 +79,7 @@ class Menu(Room):
 
     def singleplayer(self):
         Room.spawn('Board', self)
+        Player.spawn((False, True, True))
         self.model.running = False
 
     def multiplayer(self):

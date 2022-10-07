@@ -1,6 +1,8 @@
 from __future__ import annotations
 from threading import Thread
 import pygame
+import time
+from game import Game
 from assets import Assets
 from conf import Ui, cc
 
@@ -13,14 +15,22 @@ class Player(Thread):
         self.pieces = []
 
     @staticmethod
-    def spawn(team: int, npc: bool = False) -> None:
-        player = Player(team, npc)
-        player.start()
-        player.setDaemon(True)
-        Game.players.append(player)
+    def spawn(npcs: (bool, bool, bool) = (False, False, False)) -> None:
+        Game.players = [Player(i, npc) for i, npc in enumerate(npcs)]
+        for player in Game.players:
+            player.setDaemon(True)
+            player.start()
 
     def run(self) -> None:
-        pass
+        while not Game.end_game.isSet():
+            if self.team == Game.turn:
+                print(f"Player {self.team}'s turn")
+                time.sleep(5)
+                Game.next_turn()
+            else:
+                turner = Game.turn_event.wait()
+                if self.team == Game.turn:
+                    Game.turn_event.clear()
 
     def move(self, piece: Piece, tile: Tile) -> None:
         pass

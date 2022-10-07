@@ -13,12 +13,18 @@ class Model:
         {setattr(self, key, value) for key, value in kwargs.items()}
 
 class View:
+    A_LEFT: int = 0
+    A_CENTER: int = 1
+    A_RIGHT: int = 2
+    A_TOP: int = 0
+    A_BOTTOM: int = 2
+
     def __init__(self, 
             children: [View] = [],
             orient: str = 'H',
             padding: float = Ui.padding,
             spacing: float = Ui.spacing,
-            anchor: (int, int) = (0, 0),  # x, y: 1 - left/top, -1 - right/bottom
+            anchor: (int, int) = (1, 1),  # x, y: 0 - left/top, 1 - center, 2 - right/bottom
             filled: bool = False,
             size: (float, float) = (0, 0),
             surf: pygame.Surface = None,
@@ -65,14 +71,8 @@ class View:
         self.size= self.get_size(self.size, parent)
         self.pos = (0,0) if not parent else parent.get_pos(self)
         self.center = (self.pos[0] + self.size[0] / 2, self.pos[1] + self.size[1] / 2)
-        if self.anchor[0] == 1:
-            self.hook[0] = self.pos[0]
-        elif self.anchor[0] == -1:
-            self.hook[0] = self.pos[0] + self.size[0] - self.box_size[0]
-        if self.anchor[1] == 1:
-            self.hook[1] = self.pos[1]
-        elif self.anchor[1] == -1:
-            self.hook[1] = self.pos[1] + self.size[1] - self.box_size[1]
+        self.hook = (self.pos[0] + self.anchor[0] * (self.size[0] - self.box_size[0]) / 2,
+                     self.pos[1] + self.anchor[1] * (self.size[1] - self.box_size[1]) / 2)
         if not self.color:
             self.color = parent.color if parent else Ui.colors['background']
         if self.text:
@@ -127,13 +127,13 @@ class View:
             return (0, 0)
         enabled_children = list(filter(lambda child: child.enabled(), self.children[:index]))
         if self.orient == 'H':
-            hook = (self.center[0] - self.box_size[0] / 2, self.center[1] - self.padding - child.size[1] / 2) if not sum(self.hook) else self.hook
             prevChildren = sum([child.size[0] + self.spacing for child in enabled_children])
-            return (hook[0] + self.padding + prevChildren, hook[1] + self.padding)
+            return (self.hook[0] + self.padding + prevChildren, self.hook[1] + self.padding +
+                    (self.box_size[1] - child.size[1]) / 2)
         if self.orient == 'V':
-            hook = (self.center[0] - self.padding - child.size[0] / 2, self.center[1] - self.box_size[1] / 2) if not sum(self.hook) else self.hook
             prevChildren =  sum([child.size[1] + self.spacing for child in enabled_children])
-            return (hook[0] + self.padding, hook[1]+ self.padding + prevChildren)
+            return (self.hook[0] + (self.box_size[0] - child.size[0]) / 2, self.hook[1] +
+                    self.padding + prevChildren)
 
     def set_model(self, model: dict) -> None:
         self.model = model

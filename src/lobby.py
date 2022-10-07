@@ -1,4 +1,5 @@
-from view import Model, Room, View
+from room import Room
+from view import Model, View
 from conf import Ui
 
 class Lobby(Room):
@@ -58,12 +59,11 @@ class Lobby(Room):
                     size=(400, Ui.size['screen'][1] - 100),
                     color=Ui.colors['panel'],
                     orient='V',
-                    anchor=(1, 1),
+                    anchor=(View.A_LEFT, View.A_TOP),
                 ),
                 View(
                     size=(800, Ui.size['screen'][1] - 100),
                     color=Ui.colors['panel'],
-                    anchor=(1, 1),
                 )
             ],
         )

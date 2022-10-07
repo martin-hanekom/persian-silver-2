@@ -1,5 +1,5 @@
 from __future__ import annotations
-from threading import Thread
+from threading import Thread, Event
 import pygame
 from assets import Assets
 from conf import Ui, cc
@@ -9,6 +9,8 @@ class Game:
     players: list[Player] = []
     screen: pygame.Surface = None
     turn: int = 0
+    turn_event: Event = Event()
+    end_game: Event = Event()
 
     @staticmethod
     def init() -> None:
@@ -23,4 +25,5 @@ class Game:
         pygame.quit()
 
     def next_turn() -> None:
-        Game.turn = (Game.turn + 1) % cc.players.amount
+        Game.turn = (Game.turn + 1) % cc.player.amount
+        Game.turn_event.set()
