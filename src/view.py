@@ -39,7 +39,8 @@ class View:
             args = [],
             kwargs = {}) -> None:
         self.surf = surf
-        self.text = Assets.fonts[font].render(text, True, Ui.colors['text'][0]) if text else None
+        self.font = font
+        self.set_text(text, font)
         self.pos = pos
         self.color = color
         self.orient = orient
@@ -134,6 +135,11 @@ class View:
             prevChildren =  sum([child.size[1] + self.spacing for child in enabled_children])
             return (self.hook[0] + (self.box_size[0] - child.size[0]) / 2, self.hook[1] +
                     self.padding + prevChildren)
+
+    def set_text(self, text: str = None, font: str = None) -> None:
+        if not font:
+            font = self.font if self.font else 'system'
+        self.text = Assets.fonts[font].render(text, True, Ui.colors['text'][0]) if text else None
 
     def set_model(self, model: dict) -> None:
         self.model = model

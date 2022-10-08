@@ -78,8 +78,8 @@ class Menu(Room):
 
 
     def singleplayer(self):
-        Room.spawn('Board', self)
         Player.spawn((False, True, True))
+        Room.spawn('Board', self, player=Game.players[0])
         self.model.running = False
 
     def multiplayer(self):

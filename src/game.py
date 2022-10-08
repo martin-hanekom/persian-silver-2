@@ -1,16 +1,17 @@
 from __future__ import annotations
-from threading import Thread, Event
+import threading
+import events
 import pygame
 from assets import Assets
 from conf import Ui, cc
 
 class Game:
+    events: events.Events = events.Events(('next_turn',))
     rooms: list[Room] = []
     players: list[Player] = []
     screen: pygame.Surface = None
     turn: int = 0
-    turn_event: Event = Event()
-    end_game: Event = Event()
+    end_game: threading.Event = threading.Event()
 
     @staticmethod
     def init() -> None:
@@ -24,6 +25,6 @@ class Game:
             room.join()
         pygame.quit()
 
-    def next_turn() -> None:
+    def end_turn() -> None:
         Game.turn = (Game.turn + 1) % cc.player.amount
-        Game.turn_event.set()
+        Game.events.next_turn()

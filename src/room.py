@@ -10,10 +10,10 @@ class Room(Thread):
         self.parent = parent.__class__.__name__ if parent else None
 
     @staticmethod
-    def spawn(classname: str, parent: Room = None) -> None:
+    def spawn(classname: str, parent: Room = None, *args, **kwargs) -> None:
         """ CamelCase classname, e.g. Menu """
         module = __import__(classname.lower())
-        room = getattr(module, classname)(parent)
+        room = getattr(module, classname)(parent, *args, **kwargs)
         room.start()
         Game.rooms.append(room)
 

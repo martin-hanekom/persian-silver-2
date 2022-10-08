@@ -6,13 +6,26 @@ from game import Game
 from assets import Assets
 from conf import Ui, cc
 
-class Player(Thread):
+class Player:
     def __init__(self, team: int, npc: bool = False) -> None:
-        super().__init__()
         self.team = team
         self.npc = npc
         self.resources = cc.player.start
         self.pieces = []
+        
+
+class Player(Thread):
+    def __init__(self, team: int, npc: bool = False) -> None:
+        super().__init__()
+        Game.events.next_turn += self.next_turn
+        self.team = team
+        self.npc = npc
+        self.resources = cc.player.start
+        self.pieces = []
+        if self.npc:
+            self.callback = self.npc_callback
+        else:
+            self.callback = self.player_callback
 
     @staticmethod
     def spawn(npcs: (bool, bool, bool) = (False, False, False)) -> None:
@@ -22,15 +35,23 @@ class Player(Thread):
             player.start()
 
     def run(self) -> None:
-        while not Game.end_game.isSet():
-            if self.team == Game.turn:
-                print(f"Player {self.team}'s turn")
-                time.sleep(5)
-                Game.next_turn()
-            else:
-                turner = Game.turn_event.wait()
-                if self.team == Game.turn:
-                    Game.turn_event.clear()
+        Game.end_game.wait()
+
+    def player_callback(self) -> None:
+        pass
+
+    def npc_callback(self) -> None:
+        Game.end_game.wait(5)
+        Game.end_turn()
+
+    def end_turn(self) -> None:
+        if Game.turn == self.team:
+            Game.end_turn()
+
+    def next_turn(self) -> None:
+        if self.team == Game.turn:
+            print(f"Player {self.team}'s turn")
+            self.callback()
 
     def move(self, piece: Piece, tile: Tile) -> None:
         pass

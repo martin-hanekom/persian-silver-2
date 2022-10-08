@@ -6,8 +6,12 @@ from utils import Coordinate
 from conf import Ui, cc
 
 class Board(Room):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, player=None, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        Game.events.next_turn += self.next_turn
+        if not player:
+            raise Exception("Player must be attached to board")
+        self.player = player
         self.model = Model(main_menu=True, play_menu=False)
         self.view =  View(
             model=self.model,
@@ -35,11 +39,15 @@ class Board(Room):
                 View(
                     children=[
                         View(
+                            text=f"Player {Game.turn + 1}'s turn",
+                            name='player_turn',
+                        ),
+                        View(
                             size=Ui.size['btnLarge'],
                             color=Ui.colors['btn'],
                             text='End turn',
                             font='systeml',
-                            callback=Game.next_turn,
+                            callback=self.player.end_turn,
                         ),
                     ],
                     size=(Ui.size['screen'][0] - Ui.size['board'][0] - 50, Ui.size['screen'][1] - 50),
@@ -54,6 +62,10 @@ class Board(Room):
     def init(self):
         Coordinate.init(self.view.get('board').center)
         self.view.get('board').update()
+
+    def next_turn(self) -> None:
+        print(f"Displaying player {Game.turn + 1}")
+        self.view.get('player_turn').set_text(f"Player {Game.turn + 1}'s turn")
 
     def select_tile(tile: Tile) -> None:
         pass
