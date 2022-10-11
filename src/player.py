@@ -12,6 +12,8 @@ class Player:
         self.npc = npc
         self.resources = cc.player.start
         self.pieces = []
+
+
         
 
 class Player(Thread):

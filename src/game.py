@@ -25,6 +25,10 @@ class Game:
             room.join()
         pygame.quit()
 
+    @staticmethod
+    def start_game(npcs: (bool, bool, bool) = (False, False, False)) -> None:
+        Game.players = [Player(i, npc) for i, npc in enumerate(npcs)]
+
     def end_turn() -> None:
         Game.turn = (Game.turn + 1) % cc.player.amount
         Game.events.next_turn()
